@@ -1,0 +1,486 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>LeadPilot Board</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#F4F3EF;
+    --surface:#FFFFFF;
+    --surface-2:#FBFAF7;
+    --border:#E2DED2;
+    --border-strong:#CFC9BA;
+    --ink:#201E1A;
+    --ink-soft:#726D60;
+    --ink-faint:#A39D8D;
+    --accent:#2F5DE0;
+    --accent-soft:#E8ECFB;
+    --accent-ink:#1E3FA8;
+    --good:#1E8E5A;
+    --good-soft:#E3F3EA;
+    --warn:#B9770E;
+    --warn-soft:#FBF0DD;
+    --tag-backend:#2F5DE0; --tag-backend-soft:#E8ECFB;
+    --tag-frontend:#7C4DFF; --tag-frontend-soft:#EFE8FF;
+    --tag-infra:#0F9B8E; --tag-infra-soft:#DFF5F2;
+    --tag-ai:#C2650A; --tag-ai-soft:#FBEBDA;
+    --tag-qa:#C23B73; --tag-qa-soft:#FCE6EF;
+    --tag-docs:#6B675C; --tag-docs-soft:#EDEAE2;
+    --shadow: 0 1px 2px rgba(32,30,26,.07), 0 1px 1px rgba(32,30,26,.04);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#17181B; --surface:#1E2024; --surface-2:#24262B;
+      --border:#33353B; --border-strong:#3F424A;
+      --ink:#EDECE8; --ink-soft:#A3A099; --ink-faint:#716E66;
+      --accent:#7C9BFF; --accent-soft:#22304F; --accent-ink:#C4D3FF;
+      --good:#4BC98A; --good-soft:#173328;
+      --warn:#E0A73E; --warn-soft:#3A2E14;
+      --tag-backend:#7C9BFF; --tag-backend-soft:#22304F;
+      --tag-frontend:#B49BFF; --tag-frontend-soft:#2C2447;
+      --tag-infra:#4FD6C6; --tag-infra-soft:#123531;
+      --tag-ai:#E3A55C; --tag-ai-soft:#3A2A11;
+      --tag-qa:#E680AE; --tag-qa-soft:#3B1E2C;
+      --tag-docs:#B7B3A6; --tag-docs-soft:#2C2A24;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 1px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#17181B; --surface:#1E2024; --surface-2:#24262B;
+    --border:#33353B; --border-strong:#3F424A;
+    --ink:#EDECE8; --ink-soft:#A3A099; --ink-faint:#716E66;
+    --accent:#7C9BFF; --accent-soft:#22304F; --accent-ink:#C4D3FF;
+    --good:#4BC98A; --good-soft:#173328;
+    --warn:#E0A73E; --warn-soft:#3A2E14;
+    --tag-backend:#7C9BFF; --tag-backend-soft:#22304F;
+    --tag-frontend:#B49BFF; --tag-frontend-soft:#2C2447;
+    --tag-infra:#4FD6C6; --tag-infra-soft:#123531;
+    --tag-ai:#E3A55C; --tag-ai-soft:#3A2A11;
+    --tag-qa:#E680AE; --tag-qa-soft:#3B1E2C;
+    --tag-docs:#B7B3A6; --tag-docs-soft:#2C2A24;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 1px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    padding-inline:20px;
+  }
+  .mono{font-family:'IBM Plex Mono', ui-monospace, monospace;}
+
+  .page{max-width:1240px; margin:0 auto; padding-block:20px 40px;}
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    flex-wrap:wrap; margin-bottom:18px;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{
+    width:38px; height:38px; border-radius:9px; background:var(--accent);
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:14px; flex:none; letter-spacing:.02em;
+  }
+  .brand-text h1{margin:0; font-size:19px; font-weight:700; letter-spacing:-.01em;}
+  .brand-text p{margin:1px 0 0; font-size:12.5px; color:var(--ink-soft);}
+  .search input{
+    width:220px; max-width:56vw; padding:8px 12px; border-radius:8px;
+    border:1px solid var(--border); background:var(--surface); color:var(--ink);
+    font:inherit; font-size:13px;
+  }
+  .search input:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .search input::placeholder{color:var(--ink-faint);}
+
+  .sprint-tabs{
+    display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; margin-bottom:14px;
+    scrollbar-width:thin;
+  }
+  .sprint-tab{
+    flex:none; display:flex; align-items:center; gap:7px;
+    padding:8px 13px; border-radius:999px; border:1px solid var(--border);
+    background:var(--surface); color:var(--ink-soft); font-size:13px; font-weight:500;
+    cursor:pointer; white-space:nowrap; transition:background .12s, color .12s, border-color .12s;
+  }
+  .sprint-tab:hover{border-color:var(--border-strong);}
+  .sprint-tab.is-active{
+    background:var(--accent); border-color:var(--accent); color:#fff;
+  }
+  .sprint-dot{width:7px; height:7px; border-radius:50%; flex:none;}
+  .sprint-dot.done{background:var(--good);}
+  .sprint-dot.active{background:var(--warn);}
+  .sprint-dot.planned{background:var(--ink-faint);}
+  .sprint-tab.is-active .sprint-dot{background:#fff;}
+
+  .sprint-info{
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:14px 18px; margin-bottom:14px; box-shadow:var(--shadow);
+    display:none;
+  }
+  .sprint-info.is-visible{display:block;}
+  .sprint-info-top{
+    display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:baseline;
+  }
+  .sprint-info-top h2{margin:0; font-size:15px; font-weight:600;}
+  .sprint-info-top .goal{color:var(--ink-soft); font-size:13px; margin-top:3px;}
+  .sprint-meta{display:flex; gap:14px; font-size:12px; color:var(--ink-soft); flex-wrap:wrap;}
+  .sprint-meta .mono{color:var(--ink);}
+  .status-pill{
+    font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px;
+    text-transform:uppercase; letter-spacing:.04em;
+  }
+  .status-pill.done{background:var(--good-soft); color:var(--good);}
+  .status-pill.active{background:var(--warn-soft); color:var(--warn);}
+  .status-pill.planned{background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--border);}
+  .progress-row{display:flex; align-items:center; gap:10px; margin-top:12px;}
+  .progress-track{
+    flex:1; height:7px; background:var(--surface-2); border:1px solid var(--border);
+    border-radius:999px; overflow:hidden;
+  }
+  .progress-fill{height:100%; background:var(--good); border-radius:999px; transition:width .2s ease;}
+  .progress-label{font-size:12px; color:var(--ink-soft); flex:none;}
+  .progress-label .mono{color:var(--ink); font-weight:500;}
+
+  .tag-filters{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:16px;}
+  .tag-chip{
+    display:flex; align-items:center; gap:6px; padding:5px 11px; border-radius:999px;
+    border:1px solid var(--border); background:var(--surface); font-size:12px; font-weight:500;
+    color:var(--ink-soft); cursor:pointer; user-select:none;
+  }
+  .tag-chip .swatch{width:7px; height:7px; border-radius:50%;}
+  .tag-chip.is-on{border-color:transparent; color:var(--ink);}
+
+  .board{
+    display:grid; grid-auto-flow:column; grid-auto-columns:264px;
+    gap:14px; overflow-x:auto; padding-bottom:12px; align-items:start;
+  }
+  .column{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+    display:flex; flex-direction:column; min-height:120px; max-height:74vh;
+  }
+  .column-head{
+    padding:12px 13px 10px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border); flex:none;
+  }
+  .column-head h3{margin:0; font-size:12.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft);}
+  .column-stats{display:flex; gap:6px; align-items:center;}
+  .col-count{
+    font-size:11px; font-weight:600; color:var(--ink-soft); background:var(--surface);
+    border:1px solid var(--border); border-radius:999px; padding:1px 7px;
+  }
+  .col-points{font-size:11px; color:var(--ink-faint);}
+  .column-body{
+    padding:10px; display:flex; flex-direction:column; gap:8px; overflow-y:auto; flex:1;
+  }
+  .column.is-dragover{background:var(--accent-soft);}
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:9px;
+    padding:10px 11px 9px; box-shadow:var(--shadow); cursor:grab;
+    border-left:3px solid var(--tag-color, var(--border-strong));
+  }
+  .card:active{cursor:grabbing;}
+  .card.is-dragging{opacity:.45;}
+  .card.is-hidden{display:none;}
+  .card-id{font-size:10.5px; color:var(--ink-faint); letter-spacing:.02em;}
+  .card-title{font-size:13px; line-height:1.35; margin:4px 0 9px; font-weight:500;}
+  .card-foot{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .card-tag{
+    font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:5px;
+    background:var(--tag-bg); color:var(--tag-fg); text-transform:uppercase; letter-spacing:.03em;
+  }
+  .card-points{
+    font-size:11px; font-weight:600; color:var(--ink-soft);
+    width:20px; height:20px; border-radius:6px; background:var(--surface-2);
+    border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+  }
+  .empty-col{
+    font-size:12px; color:var(--ink-faint); text-align:center; padding:18px 8px;
+  }
+
+  @media (max-width: 640px){
+    body{padding-inline:14px;}
+    .brand-text p{display:none;}
+    .board{grid-auto-columns:78vw;}
+  }
+</style>
+
+<div class="page">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">LP</span>
+      <div class="brand-text">
+        <h1>LeadPilot</h1>
+        <p>Sprint board — real-estate AI automation portfolio build</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="search"><input id="search" type="text" placeholder="Search tickets…" /></div>
+    </div>
+  </header>
+
+  <nav class="sprint-tabs" id="sprintTabs"></nav>
+  <section class="sprint-info" id="sprintInfo"></section>
+  <div class="tag-filters" id="tagFilters"></div>
+  <main class="board" id="board"></main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SPRINTS = [
+    {id:'s1', name:'Sprint 1', milestone:'M1 · Foundation', goal:'Monorepo, database and auth in place; CI runs green on every push.', dates:'Day 1–2', status:'active'},
+    {id:'s2', name:'Sprint 2', milestone:'M2 · Lead intake', goal:'Real and simulated leads land in Postgres through signed, idempotent webhooks.', dates:'Day 3–4', status:'planned'},
+    {id:'s3', name:'Sprint 3', milestone:'M3 · AI chat', goal:'The AI agent qualifies a lead end to end in the chat widget.', dates:'Day 5–7', status:'planned'},
+    {id:'s4', name:'Sprint 4', milestone:'M4 · Automation', goal:'A qualified lead can book a slot and gets reminders and follow-ups automatically.', dates:'Day 8–9', status:'planned'},
+    {id:'s5', name:'Sprint 5', milestone:'M5 · Dashboard', goal:'The full golden path is clickable: Kanban, inbox, takeover, analytics.', dates:'Day 10–12', status:'planned'},
+    {id:'s6', name:'Sprint 6', milestone:'M6 · Ship', goal:'E2E suite green, both services deployed, README and demo video published.', dates:'Day 13–14', status:'planned'}
+  ];
+
+  var TAGS = {
+    backend:  {label:'Backend'},
+    frontend: {label:'Frontend'},
+    infra:    {label:'Infra'},
+    ai:       {label:'AI'},
+    qa:       {label:'QA'},
+    docs:     {label:'Docs'}
+  };
+
+  var COLUMNS = [
+    {id:'backlog', label:'Backlog'},
+    {id:'todo', label:'To do'},
+    {id:'inprogress', label:'In progress'},
+    {id:'review', label:'In review'},
+    {id:'done', label:'Done'}
+  ];
+
+  var TICKETS = [
+    {id:'LP-1', sprint:'s1', tag:'infra', points:2, col:'todo', title:'Scaffold pnpm workspace: apps/api, apps/web, packages/shared, e2e'},
+    {id:'LP-2', sprint:'s1', tag:'infra', points:3, col:'todo', title:'Docker Compose for Postgres, Redis and Mailpit'},
+    {id:'LP-3', sprint:'s1', tag:'backend', points:3, col:'todo', title:'Prisma schema (9 models) and a seed script with sample leads'},
+    {id:'LP-4', sprint:'s1', tag:'backend', points:5, col:'todo', title:'JWT auth with admin and agent roles, guards on every route'},
+    {id:'LP-5', sprint:'s1', tag:'backend', points:2, col:'todo', title:'Swagger docs at /docs and Terminus health checks'},
+    {id:'LP-6', sprint:'s1', tag:'infra', points:2, col:'todo', title:'CI: install with pnpm cache, lint and typecheck on every push'},
+
+    {id:'LP-7', sprint:'s2', tag:'backend', points:3, col:'backlog', title:'POST /public/leads endpoint with throttling'},
+    {id:'LP-8', sprint:'s2', tag:'backend', points:3, col:'backlog', title:'HMAC-SHA256 signature check on incoming webhooks'},
+    {id:'LP-9', sprint:'s2', tag:'backend', points:2, col:'backlog', title:'Idempotency key on WebhookEvent so retries are no-ops'},
+    {id:'LP-10', sprint:'s2', tag:'backend', points:5, col:'backlog', title:'Per-source normalizers for Facebook, Zillow and Google Ads payloads'},
+    {id:'LP-11', sprint:'s2', tag:'infra', points:2, col:'backlog', title:'POST /dev/simulate-leads to fire fake webhooks from each source'},
+    {id:'LP-12', sprint:'s2', tag:'backend', points:3, col:'backlog', title:'Activity timeline on the lead detail from ActivityEvent rows'},
+
+    {id:'LP-13', sprint:'s3', tag:'ai', points:5, col:'backlog', title:'LlmProvider interface with a Claude and a Fake implementation'},
+    {id:'LP-14', sprint:'s3', tag:'ai', points:5, col:'backlog', title:'Tool definitions: update_lead_profile, get_available_slots, book_appointment, handoff_to_human'},
+    {id:'LP-15', sprint:'s3', tag:'frontend', points:5, col:'backlog', title:'Chat widget on the demo site wired to the Socket.IO gateway'},
+    {id:'LP-16', sprint:'s3', tag:'backend', points:3, col:'backlog', title:'Scoring as a pure function, with a table of unit-test cases'},
+    {id:'LP-17', sprint:'s3', tag:'qa', points:5, col:'backlog', title:'Agent-loop tests against scripted Fake LLM turns'},
+
+    {id:'LP-18', sprint:'s4', tag:'backend', points:3, col:'backlog', title:'Slot generation from agent working hours'},
+    {id:'LP-19', sprint:'s4', tag:'backend', points:5, col:'backlog', title:'book_appointment tool with a transaction and partial unique index'},
+    {id:'LP-20', sprint:'s4', tag:'backend', points:3, col:'backlog', title:'Confirmation email with an .ics attachment via Resend'},
+    {id:'LP-21', sprint:'s4', tag:'backend', points:3, col:'backlog', title:'24h and 1h reminder jobs scheduled in BullMQ'},
+    {id:'LP-22', sprint:'s4', tag:'backend', points:5, col:'backlog', title:'Follow-up sequence engine, cancelled when the lead replies'},
+
+    {id:'LP-23', sprint:'s5', tag:'frontend', points:5, col:'backlog', title:'Kanban board with drag-and-drop stage changes'},
+    {id:'LP-24', sprint:'s5', tag:'frontend', points:5, col:'backlog', title:'Lead detail, inbox and the AI takeover toggle'},
+    {id:'LP-25', sprint:'s5', tag:'frontend', points:5, col:'backlog', title:'Analytics page: funnel, sources, median first-response time'},
+    {id:'LP-26', sprint:'s5', tag:'frontend', points:3, col:'backlog', title:'Live dashboard updates over the Socket.IO gateway'},
+
+    {id:'LP-27', sprint:'s6', tag:'qa', points:5, col:'backlog', title:'Playwright golden-path E2E: form → AI chat → booking → Kanban'},
+    {id:'LP-28', sprint:'s6', tag:'infra', points:3, col:'backlog', title:'Full GitHub Actions pipeline with Postgres and Redis service containers'},
+    {id:'LP-29', sprint:'s6', tag:'infra', points:3, col:'backlog', title:'Deploy api and worker to Railway, web to Vercel'},
+    {id:'LP-30', sprint:'s6', tag:'docs', points:2, col:'backlog', title:'README with live link, demo video and design decisions'}
+  ];
+
+  var STORE_KEY = 'leadpilot-board-v2';
+  var state = {activeSprint:'s1', activeTags:[], search:'', overrides:{}};
+
+  try{
+    var saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+    if(saved && typeof saved === 'object'){
+      state.activeSprint = saved.activeSprint || state.activeSprint;
+      state.activeTags = Array.isArray(saved.activeTags) ? saved.activeTags : [];
+      state.overrides = saved.overrides || {};
+    }
+  }catch(e){}
+
+  function persist(){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  function ticketColumn(t){ return state.overrides[t.id] || t.col; }
+
+  function sprintById(id){
+    for(var i=0;i<SPRINTS.length;i++) if(SPRINTS[i].id===id) return SPRINTS[i];
+    return null;
+  }
+
+  function visibleTickets(){
+    var q = state.search.trim().toLowerCase();
+    return TICKETS.filter(function(t){
+      if(state.activeSprint !== 'all' && t.sprint !== state.activeSprint) return false;
+      if(state.activeTags.length && state.activeTags.indexOf(t.tag) === -1) return false;
+      if(q && t.title.toLowerCase().indexOf(q) === -1 && t.id.toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+  }
+
+  function renderSprintTabs(){
+    var el = document.getElementById('sprintTabs');
+    var items = [{id:'all', name:'All sprints', status:null}].concat(SPRINTS);
+    el.innerHTML = '';
+    items.forEach(function(s){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sprint-tab' + (state.activeSprint === s.id ? ' is-active' : '');
+      var dot = s.status ? '<span class="sprint-dot ' + s.status + '"></span>' : '';
+      btn.innerHTML = dot + '<span>' + s.name + '</span>';
+      btn.addEventListener('click', function(){
+        state.activeSprint = s.id; persist(); renderAll();
+      });
+      el.appendChild(btn);
+    });
+  }
+
+  function renderSprintInfo(){
+    var el = document.getElementById('sprintInfo');
+    var s = sprintById(state.activeSprint);
+    if(!s){ el.classList.remove('is-visible'); el.innerHTML=''; return; }
+    el.classList.add('is-visible');
+    var ticketsInSprint = TICKETS.filter(function(t){ return t.sprint === s.id; });
+    var totalPts = ticketsInSprint.reduce(function(a,t){ return a+t.points; }, 0);
+    var donePts = ticketsInSprint.filter(function(t){ return ticketColumn(t)==='done'; })
+                                  .reduce(function(a,t){ return a+t.points; }, 0);
+    var pct = totalPts ? Math.round(donePts/totalPts*100) : 0;
+    el.innerHTML =
+      '<div class="sprint-info-top">' +
+        '<div><h2>' + s.name + ' · ' + s.milestone + '</h2><p class="goal">' + s.goal + '</p></div>' +
+        '<div class="sprint-meta">' +
+          '<span class="status-pill ' + s.status + '">' + s.status + '</span>' +
+          '<span>Dates: <span class="mono">' + s.dates + '</span></span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="progress-row">' +
+        '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+        '<div class="progress-label"><span class="mono">' + donePts + ' / ' + totalPts + '</span> pts done</div>' +
+      '</div>';
+  }
+
+  function renderTagFilters(){
+    var el = document.getElementById('tagFilters');
+    el.innerHTML = '';
+    Object.keys(TAGS).forEach(function(key){
+      var on = state.activeTags.indexOf(key) !== -1;
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'tag-chip' + (on ? ' is-on' : '');
+      chip.style.background = on ? 'var(--tag-' + key + '-soft)' : '';
+      chip.style.color = on ? 'var(--tag-' + key + ')' : '';
+      chip.innerHTML = '<span class="swatch" style="background:var(--tag-' + key + ')"></span>' + TAGS[key].label;
+      chip.addEventListener('click', function(){
+        var idx = state.activeTags.indexOf(key);
+        if(idx === -1) state.activeTags.push(key); else state.activeTags.splice(idx,1);
+        persist(); renderAll();
+      });
+      el.appendChild(chip);
+    });
+  }
+
+  function renderBoard(){
+    var board = document.getElementById('board');
+    board.innerHTML = '';
+    var tickets = visibleTickets();
+
+    COLUMNS.forEach(function(col){
+      var colTickets = tickets.filter(function(t){ return ticketColumn(t) === col.id; });
+      var pts = colTickets.reduce(function(a,t){ return a+t.points; }, 0);
+
+      var colEl = document.createElement('div');
+      colEl.className = 'column';
+      colEl.dataset.col = col.id;
+
+      var head = document.createElement('div');
+      head.className = 'column-head';
+      head.innerHTML = '<h3>' + col.label + '</h3>' +
+        '<div class="column-stats"><span class="col-count">' + colTickets.length + '</span>' +
+        '<span class="col-points mono">' + pts + ' pt</span></div>';
+      colEl.appendChild(head);
+
+      var body = document.createElement('div');
+      body.className = 'column-body';
+
+      if(!colTickets.length){
+        var empty = document.createElement('div');
+        empty.className = 'empty-col';
+        empty.textContent = 'No tickets here';
+        body.appendChild(empty);
+      }
+
+      colTickets.forEach(function(t){
+        var card = document.createElement('div');
+        card.className = 'card';
+        card.draggable = true;
+        card.dataset.id = t.id;
+        card.style.setProperty('--tag-color', 'var(--tag-' + t.tag + ')');
+        card.innerHTML =
+          '<div class="card-id mono">' + t.id + '</div>' +
+          '<div class="card-title">' + t.title + '</div>' +
+          '<div class="card-foot">' +
+            '<span class="card-tag" style="--tag-bg:var(--tag-' + t.tag + '-soft); --tag-fg:var(--tag-' + t.tag + ')">' + TAGS[t.tag].label + '</span>' +
+            '<span class="card-points mono">' + t.points + '</span>' +
+          '</div>';
+
+        card.addEventListener('dragstart', function(e){
+          card.classList.add('is-dragging');
+          e.dataTransfer.setData('text/plain', t.id);
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        card.addEventListener('dragend', function(){
+          card.classList.remove('is-dragging');
+        });
+        body.appendChild(card);
+      });
+
+      colEl.appendChild(body);
+
+      colEl.addEventListener('dragover', function(e){
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        colEl.classList.add('is-dragover');
+      });
+      colEl.addEventListener('dragleave', function(){
+        colEl.classList.remove('is-dragover');
+      });
+      colEl.addEventListener('drop', function(e){
+        e.preventDefault();
+        colEl.classList.remove('is-dragover');
+        var id = e.dataTransfer.getData('text/plain');
+        if(!id) return;
+        state.overrides[id] = col.id;
+        persist();
+        renderAll();
+      });
+
+      board.appendChild(colEl);
+    });
+  }
+
+  function renderAll(){
+    renderSprintTabs();
+    renderSprintInfo();
+    renderTagFilters();
+    renderBoard();
+  }
+
+  document.getElementById('search').addEventListener('input', function(e){
+    state.search = e.target.value;
+    renderBoard();
+  });
+
+  renderAll();
+})();
+</script>
+
+</body></html>
