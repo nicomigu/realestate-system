@@ -9,3 +9,15 @@ dist/
 .claude/
 skills-lock.json
 docs/agents/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+GEMINI.md
+.mcp.json
+.cursor/
+.cursorrules
+.windsurf/
+.gemini/
+.codex/
+.aider*
+.github/copilot-instructions.md

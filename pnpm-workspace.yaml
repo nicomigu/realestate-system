@@ -3,6 +3,7 @@ packages:
   - "packages/*"
   - "e2e"
 allowBuilds:
+  "@scarf/scarf": false
   "@parcel/watcher": true
   esbuild: true
   prisma: true

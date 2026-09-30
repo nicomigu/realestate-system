@@ -1,8 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": "./src"
+    "rootDir": "."
   },
-  "include": ["src"],
+  "include": ["src", "prisma/db.ts", "prisma/contract.d.ts", "prisma/contract.json"],
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
 }
