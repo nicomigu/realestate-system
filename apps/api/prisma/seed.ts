@@ -2,7 +2,10 @@
 // sequence, and ~50 leads spread across sources, stages and the last 8 weeks.
 // Safe to re-run (the nightly reseed uses it). Run with `pnpm db:seed`.
 import { hashPassword } from '../src/auth/password.ts';
-import { db } from './db.ts';
+import 'dotenv/config';
+import { createDb } from './db.ts';
+
+const db = createDb(process.env['DATABASE_URL']!);
 
 const SEED_PASSWORD = process.env['SEED_PASSWORD'] ?? 'demo1234';
 const LEAD_COUNT = 50;
