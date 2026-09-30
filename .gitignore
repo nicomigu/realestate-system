@@ -3,3 +3,9 @@ dist/
 .next/
 .env
 *.log
+
+# AI agent tooling (personal setup)
+.agents/
+.claude/
+skills-lock.json
+docs/agents/

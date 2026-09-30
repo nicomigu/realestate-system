@@ -1,0 +1,1462 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.ActivityEvent",
+    "label": "Create table \"ActivityEvent\"",
+    "summary": "Creates table \"ActivityEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ActivityEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ActivityEvent\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ActivityEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ActivityEvent\"",
+        "sql": "CREATE TABLE \"public\".\"ActivityEvent\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"leadId\" text NOT NULL,\n  \"payload\" jsonb NOT NULL,\n  \"type\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ActivityEvent\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ActivityEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Appointment",
+    "label": "Create table \"Appointment\"",
+    "summary": "Creates table \"Appointment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Appointment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Appointment\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Appointment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Appointment\"",
+        "sql": "CREATE TABLE \"public\".\"Appointment\" (\n  \"agentId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"endsAt\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"leadId\" text NOT NULL,\n  \"startsAt\" timestamptz NOT NULL,\n  \"status\" text DEFAULT 'BOOKED' NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"Appointment_status_check_cd6f6c1c\" CHECK (\"status\" IN ('BOOKED', 'CANCELLED', 'COMPLETED', 'NO_SHOW'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Appointment\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Appointment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Lead",
+    "label": "Create table \"Lead\"",
+    "summary": "Creates table \"Lead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Lead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Lead\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Lead\"",
+        "sql": "CREATE TABLE \"public\".\"Lead\" (\n  \"aiEnabled\" bool DEFAULT true NOT NULL,\n  \"area\" text,\n  \"assignedToId\" text,\n  \"budgetMax\" int4,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text,\n  \"firstResponseAt\" timestamptz,\n  \"id\" text NOT NULL,\n  \"intent\" text DEFAULT 'UNKNOWN' NOT NULL,\n  \"name\" text,\n  \"phone\" text,\n  \"preApproved\" bool,\n  \"score\" int4 DEFAULT 0 NOT NULL,\n  \"source\" text NOT NULL,\n  \"stage\" text DEFAULT 'NEW' NOT NULL,\n  \"tags\" text[] DEFAULT '{}' NOT NULL,\n  \"temperature\" text DEFAULT 'COLD' NOT NULL,\n  \"timelineMonths\" int4,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"Lead_intent_check_55273370\" CHECK (\"intent\" IN ('BUYER', 'SELLER', 'INVESTOR', 'UNKNOWN')),\n  CONSTRAINT \"Lead_source_check_c0a17e31\" CHECK (\"source\" IN ('WEBSITE', 'FACEBOOK', 'ZILLOW', 'GOOGLE_ADS', 'MANUAL')),\n  CONSTRAINT \"Lead_stage_check_e4cbd60e\" CHECK (\"stage\" IN ('NEW', 'CONTACTED', 'QUALIFIED', 'APPOINTMENT', 'CLOSED_WON', 'CLOSED_LOST')),\n  CONSTRAINT \"Lead_tags_elem_not_null_aecbe9e2\" CHECK (array_position(\"tags\", NULL) IS NULL),\n  CONSTRAINT \"Lead_temperature_check_f31e8577\" CHECK (\"temperature\" IN ('HOT', 'WARM', 'COLD'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Lead\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Message",
+    "label": "Create table \"Message\"",
+    "summary": "Creates table \"Message\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Message"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Message\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Message\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Message\"",
+        "sql": "CREATE TABLE \"public\".\"Message\" (\n  \"author\" text NOT NULL,\n  \"body\" text NOT NULL,\n  \"channel\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"leadId\" text NOT NULL,\n  \"meta\" jsonb,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"Message_author_check_baa3fbc4\" CHECK (\"author\" IN ('LEAD', 'AI', 'AGENT', 'SYSTEM')),\n  CONSTRAINT \"Message_channel_check_e9ea543c\" CHECK (\"channel\" IN ('WEB', 'EMAIL', 'SMS'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Message\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Message\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Sequence",
+    "label": "Create table \"Sequence\"",
+    "summary": "Creates table \"Sequence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Sequence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Sequence\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Sequence\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Sequence\"",
+        "sql": "CREATE TABLE \"public\".\"Sequence\" (\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"trigger\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Sequence\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Sequence\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.SequenceEnrollment",
+    "label": "Create table \"SequenceEnrollment\"",
+    "summary": "Creates table \"SequenceEnrollment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SequenceEnrollment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SequenceEnrollment\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SequenceEnrollment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SequenceEnrollment\"",
+        "sql": "CREATE TABLE \"public\".\"SequenceEnrollment\" (\n  \"currentStep\" int4 DEFAULT 0 NOT NULL,\n  \"id\" text NOT NULL,\n  \"leadId\" text NOT NULL,\n  \"sequenceId\" text NOT NULL,\n  \"status\" text DEFAULT 'ACTIVE' NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"SequenceEnrollment_status_check_666a942a\" CHECK (\"status\" IN ('ACTIVE', 'STOPPED', 'DONE'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SequenceEnrollment\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SequenceEnrollment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.SequenceStep",
+    "label": "Create table \"SequenceStep\"",
+    "summary": "Creates table \"SequenceStep\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SequenceStep"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SequenceStep\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SequenceStep\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SequenceStep\"",
+        "sql": "CREATE TABLE \"public\".\"SequenceStep\" (\n  \"channel\" text NOT NULL,\n  \"delayMinutes\" int4 NOT NULL,\n  \"id\" text NOT NULL,\n  \"position\" int4 NOT NULL,\n  \"sequenceId\" text NOT NULL,\n  \"template\" text NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"SequenceStep_channel_check_e9ea543c\" CHECK (\"channel\" IN ('WEB', 'EMAIL', 'SMS'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SequenceStep\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SequenceStep\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.User",
+    "label": "Create table \"User\"",
+    "summary": "Creates table \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"User\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"User\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"User\"",
+        "sql": "CREATE TABLE \"public\".\"User\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"passwordHash\" text NOT NULL,\n  \"role\" text DEFAULT 'AGENT' NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"User_role_check_8de2d3ca\" CHECK (\"role\" IN ('ADMIN', 'AGENT'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"User\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"User\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.WebhookEvent",
+    "label": "Create table \"WebhookEvent\"",
+    "summary": "Creates table \"WebhookEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "WebhookEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"WebhookEvent\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"WebhookEvent\"",
+        "sql": "CREATE TABLE \"public\".\"WebhookEvent\" (\n  \"id\" text NOT NULL,\n  \"idempotencyKey\" text NOT NULL,\n  \"payload\" jsonb NOT NULL,\n  \"receivedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"source\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"WebhookEvent\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Sequence.Sequence_name_key",
+    "label": "Add unique constraint on \"Sequence\" (name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Sequence_name_key",
+        "table": "Sequence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Sequence_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Sequence_name_key",
+          "public",
+          "\"public\".\"Sequence\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Sequence_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"Sequence\" ADD CONSTRAINT \"Sequence_name_key\" UNIQUE (\"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Sequence_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Sequence_name_key",
+          "public",
+          "\"public\".\"Sequence\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.SequenceEnrollment.SequenceEnrollment_leadId_sequenceId_key",
+    "label": "Add unique constraint on \"SequenceEnrollment\" (leadId, sequenceId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "SequenceEnrollment_leadId_sequenceId_key",
+        "table": "SequenceEnrollment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"SequenceEnrollment_leadId_sequenceId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SequenceEnrollment_leadId_sequenceId_key",
+          "public",
+          "\"public\".\"SequenceEnrollment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"SequenceEnrollment_leadId_sequenceId_key\"",
+        "sql": "ALTER TABLE \"public\".\"SequenceEnrollment\" ADD CONSTRAINT \"SequenceEnrollment_leadId_sequenceId_key\" UNIQUE (\"leadId\", \"sequenceId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"SequenceEnrollment_leadId_sequenceId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SequenceEnrollment_leadId_sequenceId_key",
+          "public",
+          "\"public\".\"SequenceEnrollment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.SequenceStep.SequenceStep_sequenceId_position_key",
+    "label": "Add unique constraint on \"SequenceStep\" (sequenceId, position)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "SequenceStep_sequenceId_position_key",
+        "table": "SequenceStep"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"SequenceStep_sequenceId_position_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SequenceStep_sequenceId_position_key",
+          "public",
+          "\"public\".\"SequenceStep\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"SequenceStep_sequenceId_position_key\"",
+        "sql": "ALTER TABLE \"public\".\"SequenceStep\" ADD CONSTRAINT \"SequenceStep_sequenceId_position_key\" UNIQUE (\"sequenceId\", \"position\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"SequenceStep_sequenceId_position_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SequenceStep_sequenceId_position_key",
+          "public",
+          "\"public\".\"SequenceStep\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.User.User_email_key",
+    "label": "Add unique constraint on \"User\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "User_email_key",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"User_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "User_email_key",
+          "public",
+          "\"public\".\"User\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"User_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD CONSTRAINT \"User_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"User_email_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "User_email_key",
+          "public",
+          "\"public\".\"User\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.WebhookEvent.WebhookEvent_idempotencyKey_key",
+    "label": "Add unique constraint on \"WebhookEvent\" (idempotencyKey)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "WebhookEvent_idempotencyKey_key",
+        "table": "WebhookEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"WebhookEvent_idempotencyKey_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookEvent_idempotencyKey_key",
+          "public",
+          "\"public\".\"WebhookEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"WebhookEvent_idempotencyKey_key\"",
+        "sql": "ALTER TABLE \"public\".\"WebhookEvent\" ADD CONSTRAINT \"WebhookEvent_idempotencyKey_key\" UNIQUE (\"idempotencyKey\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"WebhookEvent_idempotencyKey_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookEvent_idempotencyKey_key",
+          "public",
+          "\"public\".\"WebhookEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ActivityEvent.ActivityEvent_leadId_createdAt_idx_634711b6",
+    "label": "Create index \"ActivityEvent_leadId_createdAt_idx_634711b6\" on \"ActivityEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ActivityEvent_leadId_createdAt_idx_634711b6",
+        "table": "ActivityEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ActivityEvent_leadId_createdAt_idx_634711b6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ActivityEvent_leadId_createdAt_idx_634711b6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ActivityEvent_leadId_createdAt_idx_634711b6\"",
+        "sql": "CREATE INDEX \"ActivityEvent_leadId_createdAt_idx_634711b6\" ON \"public\".\"ActivityEvent\" (\"leadId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ActivityEvent_leadId_createdAt_idx_634711b6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ActivityEvent_leadId_createdAt_idx_634711b6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ActivityEvent.ActivityEvent_leadId_idx_9113844c",
+    "label": "Create index \"ActivityEvent_leadId_idx_9113844c\" on \"ActivityEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ActivityEvent_leadId_idx_9113844c",
+        "table": "ActivityEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ActivityEvent_leadId_idx_9113844c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ActivityEvent_leadId_idx_9113844c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ActivityEvent_leadId_idx_9113844c\"",
+        "sql": "CREATE INDEX \"ActivityEvent_leadId_idx_9113844c\" ON \"public\".\"ActivityEvent\" (\"leadId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ActivityEvent_leadId_idx_9113844c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ActivityEvent_leadId_idx_9113844c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ActivityEvent.ActivityEvent_type_createdAt_idx_00d94001",
+    "label": "Create index \"ActivityEvent_type_createdAt_idx_00d94001\" on \"ActivityEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ActivityEvent_type_createdAt_idx_00d94001",
+        "table": "ActivityEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ActivityEvent_type_createdAt_idx_00d94001\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ActivityEvent_type_createdAt_idx_00d94001\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ActivityEvent_type_createdAt_idx_00d94001\"",
+        "sql": "CREATE INDEX \"ActivityEvent_type_createdAt_idx_00d94001\" ON \"public\".\"ActivityEvent\" (\"type\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ActivityEvent_type_createdAt_idx_00d94001\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ActivityEvent_type_createdAt_idx_00d94001\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Appointment.Appointment_agentId_idx_8d0ba4f0",
+    "label": "Create index \"Appointment_agentId_idx_8d0ba4f0\" on \"Appointment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Appointment_agentId_idx_8d0ba4f0",
+        "table": "Appointment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Appointment_agentId_idx_8d0ba4f0\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Appointment_agentId_idx_8d0ba4f0\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Appointment_agentId_idx_8d0ba4f0\"",
+        "sql": "CREATE INDEX \"Appointment_agentId_idx_8d0ba4f0\" ON \"public\".\"Appointment\" (\"agentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Appointment_agentId_idx_8d0ba4f0\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Appointment_agentId_idx_8d0ba4f0\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Appointment.Appointment_leadId_idx_9113844c",
+    "label": "Create index \"Appointment_leadId_idx_9113844c\" on \"Appointment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Appointment_leadId_idx_9113844c",
+        "table": "Appointment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Appointment_leadId_idx_9113844c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Appointment_leadId_idx_9113844c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Appointment_leadId_idx_9113844c\"",
+        "sql": "CREATE INDEX \"Appointment_leadId_idx_9113844c\" ON \"public\".\"Appointment\" (\"leadId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Appointment_leadId_idx_9113844c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Appointment_leadId_idx_9113844c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Appointment.appointment_agent_slot_booked_d474ab00",
+    "label": "Create index \"appointment_agent_slot_booked_d474ab00\" on \"Appointment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "appointment_agent_slot_booked_d474ab00",
+        "table": "Appointment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"appointment_agent_slot_booked_d474ab00\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"appointment_agent_slot_booked_d474ab00\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"appointment_agent_slot_booked_d474ab00\"",
+        "sql": "CREATE UNIQUE INDEX \"appointment_agent_slot_booked_d474ab00\" ON \"public\".\"Appointment\" (\"agentId\", \"startsAt\") WHERE (status = 'BOOKED')",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"appointment_agent_slot_booked_d474ab00\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"appointment_agent_slot_booked_d474ab00\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Lead.Lead_assignedToId_idx_45a131c2",
+    "label": "Create index \"Lead_assignedToId_idx_45a131c2\" on \"Lead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Lead_assignedToId_idx_45a131c2",
+        "table": "Lead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Lead_assignedToId_idx_45a131c2\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead_assignedToId_idx_45a131c2\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Lead_assignedToId_idx_45a131c2\"",
+        "sql": "CREATE INDEX \"Lead_assignedToId_idx_45a131c2\" ON \"public\".\"Lead\" (\"assignedToId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Lead_assignedToId_idx_45a131c2\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead_assignedToId_idx_45a131c2\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Lead.Lead_source_createdAt_idx_ca471564",
+    "label": "Create index \"Lead_source_createdAt_idx_ca471564\" on \"Lead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Lead_source_createdAt_idx_ca471564",
+        "table": "Lead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Lead_source_createdAt_idx_ca471564\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead_source_createdAt_idx_ca471564\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Lead_source_createdAt_idx_ca471564\"",
+        "sql": "CREATE INDEX \"Lead_source_createdAt_idx_ca471564\" ON \"public\".\"Lead\" (\"source\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Lead_source_createdAt_idx_ca471564\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead_source_createdAt_idx_ca471564\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Lead.Lead_stage_idx_51755035",
+    "label": "Create index \"Lead_stage_idx_51755035\" on \"Lead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Lead_stage_idx_51755035",
+        "table": "Lead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Lead_stage_idx_51755035\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead_stage_idx_51755035\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Lead_stage_idx_51755035\"",
+        "sql": "CREATE INDEX \"Lead_stage_idx_51755035\" ON \"public\".\"Lead\" (\"stage\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Lead_stage_idx_51755035\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead_stage_idx_51755035\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Message.Message_leadId_createdAt_idx_634711b6",
+    "label": "Create index \"Message_leadId_createdAt_idx_634711b6\" on \"Message\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Message_leadId_createdAt_idx_634711b6",
+        "table": "Message"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Message_leadId_createdAt_idx_634711b6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Message_leadId_createdAt_idx_634711b6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Message_leadId_createdAt_idx_634711b6\"",
+        "sql": "CREATE INDEX \"Message_leadId_createdAt_idx_634711b6\" ON \"public\".\"Message\" (\"leadId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Message_leadId_createdAt_idx_634711b6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Message_leadId_createdAt_idx_634711b6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Message.Message_leadId_idx_9113844c",
+    "label": "Create index \"Message_leadId_idx_9113844c\" on \"Message\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Message_leadId_idx_9113844c",
+        "table": "Message"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Message_leadId_idx_9113844c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Message_leadId_idx_9113844c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Message_leadId_idx_9113844c\"",
+        "sql": "CREATE INDEX \"Message_leadId_idx_9113844c\" ON \"public\".\"Message\" (\"leadId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Message_leadId_idx_9113844c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Message_leadId_idx_9113844c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SequenceEnrollment.SequenceEnrollment_leadId_idx_9113844c",
+    "label": "Create index \"SequenceEnrollment_leadId_idx_9113844c\" on \"SequenceEnrollment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SequenceEnrollment_leadId_idx_9113844c",
+        "table": "SequenceEnrollment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SequenceEnrollment_leadId_idx_9113844c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SequenceEnrollment_leadId_idx_9113844c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SequenceEnrollment_leadId_idx_9113844c\"",
+        "sql": "CREATE INDEX \"SequenceEnrollment_leadId_idx_9113844c\" ON \"public\".\"SequenceEnrollment\" (\"leadId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SequenceEnrollment_leadId_idx_9113844c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SequenceEnrollment_leadId_idx_9113844c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SequenceEnrollment.SequenceEnrollment_sequenceId_idx_de377412",
+    "label": "Create index \"SequenceEnrollment_sequenceId_idx_de377412\" on \"SequenceEnrollment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SequenceEnrollment_sequenceId_idx_de377412",
+        "table": "SequenceEnrollment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SequenceEnrollment_sequenceId_idx_de377412\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SequenceEnrollment_sequenceId_idx_de377412\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SequenceEnrollment_sequenceId_idx_de377412\"",
+        "sql": "CREATE INDEX \"SequenceEnrollment_sequenceId_idx_de377412\" ON \"public\".\"SequenceEnrollment\" (\"sequenceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SequenceEnrollment_sequenceId_idx_de377412\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SequenceEnrollment_sequenceId_idx_de377412\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SequenceStep.SequenceStep_sequenceId_idx_de377412",
+    "label": "Create index \"SequenceStep_sequenceId_idx_de377412\" on \"SequenceStep\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SequenceStep_sequenceId_idx_de377412",
+        "table": "SequenceStep"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SequenceStep_sequenceId_idx_de377412\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SequenceStep_sequenceId_idx_de377412\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SequenceStep_sequenceId_idx_de377412\"",
+        "sql": "CREATE INDEX \"SequenceStep_sequenceId_idx_de377412\" ON \"public\".\"SequenceStep\" (\"sequenceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SequenceStep_sequenceId_idx_de377412\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SequenceStep_sequenceId_idx_de377412\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ActivityEvent.ActivityEvent_leadId_fkey",
+    "label": "Add foreign key \"ActivityEvent_leadId_fkey\" on \"ActivityEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ActivityEvent_leadId_fkey",
+        "table": "ActivityEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ActivityEvent_leadId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ActivityEvent_leadId_fkey",
+          "public",
+          "\"public\".\"ActivityEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ActivityEvent_leadId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ActivityEvent\"\nADD CONSTRAINT \"ActivityEvent_leadId_fkey\"\nFOREIGN KEY (\"leadId\")\nREFERENCES \"public\".\"Lead\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ActivityEvent_leadId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ActivityEvent_leadId_fkey",
+          "public",
+          "\"public\".\"ActivityEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Appointment.Appointment_leadId_fkey",
+    "label": "Add foreign key \"Appointment_leadId_fkey\" on \"Appointment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Appointment_leadId_fkey",
+        "table": "Appointment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Appointment_leadId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Appointment_leadId_fkey",
+          "public",
+          "\"public\".\"Appointment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Appointment_leadId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Appointment\"\nADD CONSTRAINT \"Appointment_leadId_fkey\"\nFOREIGN KEY (\"leadId\")\nREFERENCES \"public\".\"Lead\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Appointment_leadId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Appointment_leadId_fkey",
+          "public",
+          "\"public\".\"Appointment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Appointment.Appointment_agentId_fkey",
+    "label": "Add foreign key \"Appointment_agentId_fkey\" on \"Appointment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Appointment_agentId_fkey",
+        "table": "Appointment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Appointment_agentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Appointment_agentId_fkey",
+          "public",
+          "\"public\".\"Appointment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Appointment_agentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Appointment\"\nADD CONSTRAINT \"Appointment_agentId_fkey\"\nFOREIGN KEY (\"agentId\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Appointment_agentId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Appointment_agentId_fkey",
+          "public",
+          "\"public\".\"Appointment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Lead.Lead_assignedToId_fkey",
+    "label": "Add foreign key \"Lead_assignedToId_fkey\" on \"Lead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Lead_assignedToId_fkey",
+        "table": "Lead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Lead_assignedToId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Lead_assignedToId_fkey",
+          "public",
+          "\"public\".\"Lead\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Lead_assignedToId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Lead\"\nADD CONSTRAINT \"Lead_assignedToId_fkey\"\nFOREIGN KEY (\"assignedToId\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Lead_assignedToId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Lead_assignedToId_fkey",
+          "public",
+          "\"public\".\"Lead\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Message.Message_leadId_fkey",
+    "label": "Add foreign key \"Message_leadId_fkey\" on \"Message\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Message_leadId_fkey",
+        "table": "Message"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Message_leadId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Message_leadId_fkey",
+          "public",
+          "\"public\".\"Message\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Message_leadId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Message\"\nADD CONSTRAINT \"Message_leadId_fkey\"\nFOREIGN KEY (\"leadId\")\nREFERENCES \"public\".\"Lead\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Message_leadId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Message_leadId_fkey",
+          "public",
+          "\"public\".\"Message\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SequenceEnrollment.SequenceEnrollment_leadId_fkey",
+    "label": "Add foreign key \"SequenceEnrollment_leadId_fkey\" on \"SequenceEnrollment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SequenceEnrollment_leadId_fkey",
+        "table": "SequenceEnrollment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SequenceEnrollment_leadId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SequenceEnrollment_leadId_fkey",
+          "public",
+          "\"public\".\"SequenceEnrollment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SequenceEnrollment_leadId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SequenceEnrollment\"\nADD CONSTRAINT \"SequenceEnrollment_leadId_fkey\"\nFOREIGN KEY (\"leadId\")\nREFERENCES \"public\".\"Lead\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SequenceEnrollment_leadId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SequenceEnrollment_leadId_fkey",
+          "public",
+          "\"public\".\"SequenceEnrollment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SequenceEnrollment.SequenceEnrollment_sequenceId_fkey",
+    "label": "Add foreign key \"SequenceEnrollment_sequenceId_fkey\" on \"SequenceEnrollment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SequenceEnrollment_sequenceId_fkey",
+        "table": "SequenceEnrollment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SequenceEnrollment_sequenceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SequenceEnrollment_sequenceId_fkey",
+          "public",
+          "\"public\".\"SequenceEnrollment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SequenceEnrollment_sequenceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SequenceEnrollment\"\nADD CONSTRAINT \"SequenceEnrollment_sequenceId_fkey\"\nFOREIGN KEY (\"sequenceId\")\nREFERENCES \"public\".\"Sequence\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SequenceEnrollment_sequenceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SequenceEnrollment_sequenceId_fkey",
+          "public",
+          "\"public\".\"SequenceEnrollment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SequenceStep.SequenceStep_sequenceId_fkey",
+    "label": "Add foreign key \"SequenceStep_sequenceId_fkey\" on \"SequenceStep\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SequenceStep_sequenceId_fkey",
+        "table": "SequenceStep"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SequenceStep_sequenceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SequenceStep_sequenceId_fkey",
+          "public",
+          "\"public\".\"SequenceStep\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SequenceStep_sequenceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SequenceStep\"\nADD CONSTRAINT \"SequenceStep_sequenceId_fkey\"\nFOREIGN KEY (\"sequenceId\")\nREFERENCES \"public\".\"Sequence\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SequenceStep_sequenceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SequenceStep_sequenceId_fkey",
+          "public",
+          "\"public\".\"SequenceStep\""
+        ]
+      }
+    ]
+  }
+]

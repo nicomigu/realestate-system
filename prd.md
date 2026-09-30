@@ -1,10 +1,10 @@
-# LeadPilot — Real Estate AI Automation PRD
+# realestate-system — Real Estate AI Automation PRD
 
 Sep 28, 2026 · @Nico
 
 ## Overview
 
-LeadPilot turns a new real-estate lead into a booked appointment in under a minute, with an AI assistant running the first conversation. It builds the diagram's core loop for real (capture → instant AI reply → qualify → book → pipeline), simulates the paid integrations, and skips the rest.
+realestate-system turns a new real-estate lead into a booked appointment in under a minute, with an AI assistant running the first conversation. It builds the diagram's core loop for real (capture → instant AI reply → qualify → book → pipeline), simulates the paid integrations, and skips the rest.
 
 **Portfolio goals**
 
@@ -32,7 +32,7 @@ NestJS, TypeScript end to end. The portfolio already has a FastAPI app, so this 
 | Repo     | pnpm workspaces: `apps/api`, `apps/web`, `packages/shared`, `e2e`                       | One install, shared types, one CI                |
 | API      | NestJS, Swagger, zod validation pipe, `@nestjs/throttler`, pino, terminus health checks | Modules map 1:1 to the diagram's boxes           |
 | Shared   | zod schemas + inferred types in `packages/shared`                                       | API and UI validate the same shapes              |
-| Database | PostgreSQL + Prisma                                                                     | Fast migrations, typed queries, easy seed script |
+| Database | PostgreSQL + Prisma 8 (RC): contract-first, `db.orm` / `db.sql` query lanes              | Planned, content-hashed migrations; typed queries; shows a current stack |
 | Jobs     | Redis + BullMQ, separate worker entrypoint                                              | Delayed follow-ups, reminders, retries           |
 | Realtime | Socket.IO gateway                                                                       | Live Kanban, inbox and chat widget               |
 | AI       | Claude Haiku with tool use, behind `LlmProvider`                                        | Cheap, fast; fake provider for tests             |
@@ -44,7 +44,7 @@ NestJS, TypeScript end to end. The portfolio already has a FastAPI app, so this 
 
 ## Architecture
 
-&#91;embedded content: LeadPilot architecture · API, queue, worker\]
+&#91;embedded content: realestate-system architecture · API, queue, worker\]
 
 The API only validates, writes to Postgres and emits a domain event. Anything slow (the Claude call) or timed (follow-ups, reminders) becomes a BullMQ job. The worker pushes results to the dashboard through the Socket.IO Redis emitter, so the UI updates live.
 
@@ -97,184 +97,80 @@ The model never writes to the database. It calls whitelisted tools, and the serv
 
 ## Data model
 
-Nine Prisma models. Messages hang directly off the lead, with no separate conversation table, to keep queries simple. `ActivityEvent` doubles as the lead timeline and the source for analytics.
+Nine models on **Prisma 8** (currently `8.0.0-rc`). Messages hang directly off the lead, with no separate conversation table, to keep queries simple. `ActivityEvent` doubles as the lead timeline and the source for analytics.
+
+The source of truth is the data contract at `apps/api/prisma/contract.prisma`. `pnpm contract:emit` compiles it to `contract.json` + `contract.d.ts`, which the typed client in `apps/api/prisma/db.ts` reads.
+
+**How Prisma 8 shapes the schema**
+
+| Concern | Choice | Why |
+| --- | --- | --- |
+| Enums | `enum Stage { @@type("pg/text@1") NEW = "NEW" ... }`; defaults are string literals (`@default("NEW")`) | Stored as `text` with a generated `CHECK` constraint, not a native Postgres enum, so adding a value never needs `ALTER TYPE` |
+| Timestamps | `TimestamptzString` | Node 24 has no global `Temporal`, which Prisma 8's `Timestamptz` needs; ISO strings avoid a polyfill. Still `timestamptz` in Postgres, always UTC |
+| IDs | `String @id @default(cuid(2))` | Prisma 8 requires the cuid version argument |
+| JSON | `Jsonb` (`Message.meta`, `ActivityEvent.payload`, `WebhookEvent.payload`) | Plain `Json` maps to `json`; `jsonb` can be indexed and queried |
+| Relations | Declared on the owning side only | Prisma 8 derives back-references (`lead.messages`, `user.appointments`) itself |
+| Race-safe booking | `@@index([agentId, startsAt], unique: true, where: "status = 'BOOKED'")` in the contract | Partial unique index is first-class, so no hand-written SQL migration |
+| Deletes | Lead children (`Message`, `Appointment`, `ActivityEvent`, `SequenceEnrollment`) and `SequenceStep` cascade | Deleting a demo lead or sequence cleans up after itself |
+
+**Changes from the first draft of this PRD**
+
+- `User.createdAt` and `Appointment.createdAt` added.
+- `Lead.tags` defaults to `[]`.
+- `@@unique` on `Sequence.name` (the seed and sequence lookups key on it) and on `SequenceStep (sequenceId, position)`.
+- Foreign-key indexes on `Lead.assignedToId`, `Appointment.leadId`, `SequenceEnrollment.sequenceId`.
+
+Core models, abridged (see the contract for all nine models and nine enums):
 
 ```prisma
-enum Role {
-  ADMIN
-  AGENT
-}
-
-enum LeadSource {
-  WEBSITE
-  FACEBOOK
-  ZILLOW
-  GOOGLE_ADS
-  MANUAL
-}
-
-enum Intent {
-  BUYER
-  SELLER
-  INVESTOR
-  UNKNOWN
-}
-
-enum Temperature {
-  HOT
-  WARM
-  COLD
-}
-
-enum Stage {
-  NEW
-  CONTACTED
-  QUALIFIED
-  APPOINTMENT
-  CLOSED_WON
-  CLOSED_LOST
-}
-
-enum Channel {
-  WEB
-  EMAIL
-  SMS
-}
-
-enum Author {
-  LEAD
-  AI
-  AGENT
-  SYSTEM
-}
-
-enum AppointmentStatus {
-  BOOKED
-  CANCELLED
-  COMPLETED
-  NO_SHOW
-}
-
-enum EnrollmentStatus {
-  ACTIVE
-  STOPPED
-  DONE
-}
-
-model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
-  passwordHash String
-  name         String
-  role         Role          @default(AGENT)
-  leads        Lead[]
-  appointments Appointment[]
-}
-
 model Lead {
-  id              String               @id @default(cuid())
+  id              String             @id @default(cuid(2))
   name            String?
   email           String?
   phone           String?
   source          LeadSource
-  intent          Intent               @default(UNKNOWN)
-  stage           Stage                @default(NEW)
-  score           Int                  @default(0)
-  temperature     Temperature          @default(COLD)
+  intent          Intent             @default("UNKNOWN")
+  stage           Stage              @default("NEW")
+  score           Int                @default(0)
+  temperature     Temperature        @default("COLD")
   budgetMax       Int?
   area            String?
   timelineMonths  Int?
   preApproved     Boolean?
-  tags            String[]
-  aiEnabled       Boolean              @default(true)
+  tags            String[]           @default([])
+  aiEnabled       Boolean            @default(true)
   assignedToId    String?
-  assignedTo      User?                @relation(fields: [assignedToId], references: [id])
-  firstResponseAt DateTime?
-  createdAt       DateTime             @default(now())
-  messages        Message[]
-  appointments    Appointment[]
-  events          ActivityEvent[]
-  enrollments     SequenceEnrollment[]
+  assignedTo      User?              @relation(fields: [assignedToId], references: [id])
+  firstResponseAt TimestamptzString?
+  createdAt       TimestamptzString  @default(now())
 
   @@index([stage])
   @@index([source, createdAt])
-}
-
-model Message {
-  id        String   @id @default(cuid())
-  leadId    String
-  lead      Lead     @relation(fields: [leadId], references: [id])
-  channel   Channel
-  author    Author
-  body      String
-  meta      Json?    // tool calls, model, token usage
-  createdAt DateTime @default(now())
-
-  @@index([leadId, createdAt])
+  @@index([assignedToId])
 }
 
 model Appointment {
-  id       String            @id @default(cuid())
-  leadId   String
-  lead     Lead              @relation(fields: [leadId], references: [id])
-  agentId  String
-  agent    User              @relation(fields: [agentId], references: [id])
-  startsAt DateTime
-  endsAt   DateTime
-  status   AppointmentStatus @default(BOOKED)
-  // partial unique index on (agentId, startsAt) WHERE status = 'BOOKED', added in a SQL migration
-}
-
-model Sequence {
-  id          String               @id @default(cuid())
-  name        String
-  trigger     String               // domain event name, e.g. "lead.created"
-  steps       SequenceStep[]
-  enrollments SequenceEnrollment[]
-}
-
-model SequenceStep {
-  id           String   @id @default(cuid())
-  sequenceId   String
-  sequence     Sequence @relation(fields: [sequenceId], references: [id])
-  position     Int
-  delayMinutes Int
-  channel      Channel
-  template     String
-}
-
-model SequenceEnrollment {
-  id          String           @id @default(cuid())
-  leadId      String
-  lead        Lead             @relation(fields: [leadId], references: [id])
-  sequenceId  String
-  sequence    Sequence         @relation(fields: [sequenceId], references: [id])
-  currentStep Int              @default(0)
-  status      EnrollmentStatus @default(ACTIVE)
-
-  @@unique([leadId, sequenceId])
-}
-
-model ActivityEvent {
-  id        String   @id @default(cuid())
+  id        String            @id @default(cuid(2))
   leadId    String
-  lead      Lead     @relation(fields: [leadId], references: [id])
-  type      String   // domain event name
-  payload   Json
-  createdAt DateTime @default(now())
+  lead      Lead              @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  agentId   String
+  agent     User              @relation(fields: [agentId], references: [id])
+  startsAt  TimestamptzString
+  endsAt    TimestamptzString
+  status    AppointmentStatus @default("BOOKED")
+  createdAt TimestamptzString @default(now())
 
-  @@index([leadId, createdAt])
-  @@index([type, createdAt])
-}
-
-model WebhookEvent {
-  id             String   @id @default(cuid())
-  source         String
-  idempotencyKey String   @unique
-  payload        Json
-  receivedAt     DateTime @default(now())
+  @@index([leadId])
+  @@index([agentId, startsAt], unique: true, where: "status = 'BOOKED'", name: "appointment_agent_slot_booked")
 }
 ```
+
+**Migrations and seed**
+
+- Local, schema in flux: edit the contract, `pnpm contract:emit`, then `prisma db update` (no migration files).
+- Anything shared or deployed: `prisma migration plan --name <slug>` writes a reviewable package under `apps/api/migrations/app/`, and `pnpm db:migrate` (`prisma db migrate`) applies it in one transaction. Commit the migration packages and `migrations/snapshots/`.
+- Prisma 8 has no `db seed` command, so `pnpm db:seed` runs `apps/api/prisma/seed.ts` with Node's built-in TypeScript support. It truncates and reseeds deterministically: an admin and an agent (password from `SEED_PASSWORD`, default `demo1234`), the "New lead" sequence, and 50 leads across every source and stage, with messages, activity events, enrollments and upcoming appointments.
+- Passwords are hashed with Node's `scrypt` (`apps/api/src/auth/password.ts`), which the auth module reuses.
 
 Working hours and slot length live in config for the MVP. Store every time in UTC and render it in the agent's time zone.
 
@@ -335,14 +231,14 @@ Every test in CI uses the Fake LLM, so the suite is free, fast and deterministic
 
 1. Install with the pnpm cache.
 2. Lint and typecheck every package.
-3. Run `prisma migrate deploy` against the Postgres service.
+3. Run `prisma contract emit`, fail if the committed `contract.json` changed, then `prisma db migrate` against the Postgres service.
 4. Unit, integration and agent-loop tests.
 5. Build API and web, start them, run Playwright; upload the HTML report and traces on failure.
 6. On `main`: Railway and Vercel deploy automatically.
 
 **Deployment**
 
-- Railway: `api` and `worker` services from the same image with different start commands, plus managed Postgres and Redis. Migrations run before the API starts.
+- Railway: `api` and `worker` services from the same image with different start commands, plus managed Postgres and Redis. `prisma db migrate` runs as a pre-deploy step before the API starts, because Prisma 8 doesn't apply migrations from app code.
 - Vercel: `apps/web`.
 - Demo safety: a seeded agent login shown on the landing page, a cap on AI turns per lead, a daily cap on Claude calls, and a nightly reseed.
 
@@ -359,7 +255,7 @@ Reviewers spend about a minute on a repo, so the README does most of the selling
 **Polish checklist**
 
 - [ ] README opens with the live link, a demo login, a 2-minute video or GIF, and the architecture diagram
-- [ ] One-command local setup: `docker compose up` then `pnpm dev`, with a seed script
+- [ ] One-command local setup: `docker compose up`, `pnpm db:reset` (migrate + seed), then `pnpm dev`
 - [ ] Seed about 50 realistic leads across sources and stages so the analytics page is never empty
 - [ ] A "Design decisions" section: why a queue, why rule-based scoring, why a Fake LLM, what was simulated and why
 - [ ] Three short ADRs in `docs/adr`

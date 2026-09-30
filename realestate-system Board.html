@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>LeadPilot Board</title>
+<title>realestate-system Board</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
@@ -209,9 +209,9 @@
 <div class="page">
   <header class="topbar">
     <div class="brand">
-      <span class="brand-mark">LP</span>
+      <span class="brand-mark">RS</span>
       <div class="brand-text">
-        <h1>LeadPilot</h1>
+        <h1>realestate-system</h1>
         <p>Sprint board — real-estate AI automation portfolio build</p>
       </div>
     </div>
@@ -257,9 +257,9 @@
   ];
 
   var TICKETS = [
-    {id:'LP-1', sprint:'s1', tag:'infra', points:2, col:'todo', title:'Scaffold pnpm workspace: apps/api, apps/web, packages/shared, e2e'},
-    {id:'LP-2', sprint:'s1', tag:'infra', points:3, col:'todo', title:'Docker Compose for Postgres, Redis and Mailpit'},
-    {id:'LP-3', sprint:'s1', tag:'backend', points:3, col:'todo', title:'Prisma schema (9 models) and a seed script with sample leads'},
+    {id:'LP-1', sprint:'s1', tag:'infra', points:2, col:'done', title:'Scaffold pnpm workspace: apps/api, apps/web, packages/shared, e2e'},
+    {id:'LP-2', sprint:'s1', tag:'infra', points:3, col:'done', title:'Docker Compose for Postgres, Redis and Mailpit'},
+    {id:'LP-3', sprint:'s1', tag:'backend', points:3, col:'done', title:'Prisma 8 contract (9 models), initial migration and a seed script with sample leads'},
     {id:'LP-4', sprint:'s1', tag:'backend', points:5, col:'todo', title:'JWT auth with admin and agent roles, guards on every route'},
     {id:'LP-5', sprint:'s1', tag:'backend', points:2, col:'todo', title:'Swagger docs at /docs and Terminus health checks'},
     {id:'LP-6', sprint:'s1', tag:'infra', points:2, col:'todo', title:'CI: install with pnpm cache, lint and typecheck on every push'},
@@ -294,7 +294,7 @@
     {id:'LP-30', sprint:'s6', tag:'docs', points:2, col:'backlog', title:'README with live link, demo video and design decisions'}
   ];
 
-  var STORE_KEY = 'leadpilot-board-v2';
+  var STORE_KEY = 'realestate-system-board-v1';
   var state = {activeSprint:'s1', activeTags:[], search:'', overrides:{}};
 
   try{

@@ -1,0 +1,189 @@
+// use prisma-8
+
+// Timestamps use TimestamptzString (ISO strings) because Node 24 has no global
+// Temporal. Store everything in UTC; render in the agent's time zone.
+
+enum Role {
+  @@type("pg/text@1")
+  ADMIN = "ADMIN"
+  AGENT = "AGENT"
+}
+
+enum LeadSource {
+  @@type("pg/text@1")
+  WEBSITE    = "WEBSITE"
+  FACEBOOK   = "FACEBOOK"
+  ZILLOW     = "ZILLOW"
+  GOOGLE_ADS = "GOOGLE_ADS"
+  MANUAL     = "MANUAL"
+}
+
+enum Intent {
+  @@type("pg/text@1")
+  BUYER    = "BUYER"
+  SELLER   = "SELLER"
+  INVESTOR = "INVESTOR"
+  UNKNOWN  = "UNKNOWN"
+}
+
+enum Temperature {
+  @@type("pg/text@1")
+  HOT  = "HOT"
+  WARM = "WARM"
+  COLD = "COLD"
+}
+
+enum Stage {
+  @@type("pg/text@1")
+  NEW         = "NEW"
+  CONTACTED   = "CONTACTED"
+  QUALIFIED   = "QUALIFIED"
+  APPOINTMENT = "APPOINTMENT"
+  CLOSED_WON  = "CLOSED_WON"
+  CLOSED_LOST = "CLOSED_LOST"
+}
+
+enum Channel {
+  @@type("pg/text@1")
+  WEB   = "WEB"
+  EMAIL = "EMAIL"
+  SMS   = "SMS"
+}
+
+enum Author {
+  @@type("pg/text@1")
+  LEAD   = "LEAD"
+  AI     = "AI"
+  AGENT  = "AGENT"
+  SYSTEM = "SYSTEM"
+}
+
+enum AppointmentStatus {
+  @@type("pg/text@1")
+  BOOKED    = "BOOKED"
+  CANCELLED = "CANCELLED"
+  COMPLETED = "COMPLETED"
+  NO_SHOW   = "NO_SHOW"
+}
+
+enum EnrollmentStatus {
+  @@type("pg/text@1")
+  ACTIVE  = "ACTIVE"
+  STOPPED = "STOPPED"
+  DONE    = "DONE"
+}
+
+model User {
+  id           String            @id @default(cuid(2))
+  email        String            @unique
+  passwordHash String
+  name         String
+  role         Role              @default(AGENT)
+  createdAt    TimestamptzString @default(now())
+}
+
+model Lead {
+  id              String             @id @default(cuid(2))
+  name            String?
+  email           String?
+  phone           String?
+  source          LeadSource
+  intent          Intent             @default(UNKNOWN)
+  stage           Stage              @default(NEW)
+  score           Int                @default(0)
+  temperature     Temperature        @default(COLD)
+  budgetMax       Int?
+  area            String?
+  timelineMonths  Int?
+  preApproved     Boolean?
+  tags            String[]           @default([])
+  aiEnabled       Boolean            @default(true)
+  assignedToId    String?
+  assignedTo      User?              @relation(fields: [assignedToId], references: [id])
+  firstResponseAt TimestamptzString?
+  createdAt       TimestamptzString  @default(now())
+
+  @@index([stage])
+  @@index([source, createdAt])
+  @@index([assignedToId])
+}
+
+model Message {
+  id        String            @id @default(cuid(2))
+  leadId    String
+  lead      Lead              @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  channel   Channel
+  author    Author
+  body      String
+  meta      Jsonb? // tool calls, model, token usage
+  createdAt TimestamptzString @default(now())
+
+  @@index([leadId, createdAt])
+}
+
+model Appointment {
+  id        String            @id @default(cuid(2))
+  leadId    String
+  lead      Lead              @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  agentId   String
+  agent     User              @relation(fields: [agentId], references: [id])
+  startsAt  TimestamptzString
+  endsAt    TimestamptzString
+  status    AppointmentStatus @default(BOOKED)
+  createdAt TimestamptzString @default(now())
+
+  @@index([leadId])
+  // An agent can hold only one live booking per start time; cancelled rows don't block the slot.
+  @@index([agentId, startsAt], unique: true, where: "status = 'BOOKED'", name: "appointment_agent_slot_booked")
+}
+
+model Sequence {
+  id      String @id @default(cuid(2))
+  name    String @unique
+  trigger String // domain event name, e.g. "lead.created"
+}
+
+model SequenceStep {
+  id           String   @id @default(cuid(2))
+  sequenceId   String
+  sequence     Sequence @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
+  position     Int
+  delayMinutes Int
+  channel      Channel
+  template     String
+
+  @@unique([sequenceId, position])
+}
+
+model SequenceEnrollment {
+  id          String           @id @default(cuid(2))
+  leadId      String
+  lead        Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  sequenceId  String
+  sequence    Sequence         @relation(fields: [sequenceId], references: [id])
+  currentStep Int              @default(0)
+  status      EnrollmentStatus @default(ACTIVE)
+
+  @@unique([leadId, sequenceId])
+  @@index([sequenceId])
+}
+
+model ActivityEvent {
+  id        String            @id @default(cuid(2))
+  leadId    String
+  lead      Lead              @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type      String // domain event name
+  payload   Jsonb
+  createdAt TimestamptzString @default(now())
+
+  @@index([leadId, createdAt])
+  @@index([type, createdAt])
+}
+
+model WebhookEvent {
+  id             String            @id @default(cuid(2))
+  source         String
+  idempotencyKey String            @unique
+  payload        Jsonb
+  receivedAt     TimestamptzString @default(now())
+}

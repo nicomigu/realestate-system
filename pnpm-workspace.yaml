@@ -3,5 +3,8 @@ packages:
   - "packages/*"
   - "e2e"
 allowBuilds:
-  '@parcel/watcher': false
-  unrs-resolver: false
+  "@parcel/watcher": true
+  esbuild: true
+  prisma: true
+  unrs-resolver: true
+  workerd: true

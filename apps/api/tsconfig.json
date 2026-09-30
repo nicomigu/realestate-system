@@ -18,6 +18,13 @@
     "incremental": true,
     "skipLibCheck": true,
     "strict": true,
-    "strictPropertyInitialization": false
-  }
+    "strictPropertyInitialization": false,
+    "resolveJsonModule": true,
+    "rewriteRelativeImportExtensions": true
+  },
+  // migrations/ is rendered by Prisma and imports JSON snapshots without the
+  // `with { type: 'json' }` shape nodenext expects; it runs via `node`, not tsc.
+  // prisma.config.ts is read by the Prisma CLI, and its inferred type can't be
+  // named under `declaration: true`.
+  "exclude": ["node_modules", "dist", "migrations", "prisma.config.ts"]
 }

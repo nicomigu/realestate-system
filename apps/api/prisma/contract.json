@@ -1,0 +1,2281 @@
+{
+  "schemaVersion": "1",
+  "targetFamily": "sql",
+  "target": "postgres",
+  "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
+  "roots": {
+    "ActivityEvent": {
+      "model": "ActivityEvent",
+      "namespace": "public"
+    },
+    "Appointment": {
+      "model": "Appointment",
+      "namespace": "public"
+    },
+    "Lead": {
+      "model": "Lead",
+      "namespace": "public"
+    },
+    "Message": {
+      "model": "Message",
+      "namespace": "public"
+    },
+    "Sequence": {
+      "model": "Sequence",
+      "namespace": "public"
+    },
+    "SequenceEnrollment": {
+      "model": "SequenceEnrollment",
+      "namespace": "public"
+    },
+    "SequenceStep": {
+      "model": "SequenceStep",
+      "namespace": "public"
+    },
+    "User": {
+      "model": "User",
+      "namespace": "public"
+    },
+    "WebhookEvent": {
+      "model": "WebhookEvent",
+      "namespace": "public"
+    }
+  },
+  "domain": {
+    "namespaces": {
+      "public": {
+        "enum": {
+          "AppointmentStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "BOOKED",
+                "value": "BOOKED"
+              },
+              {
+                "name": "CANCELLED",
+                "value": "CANCELLED"
+              },
+              {
+                "name": "COMPLETED",
+                "value": "COMPLETED"
+              },
+              {
+                "name": "NO_SHOW",
+                "value": "NO_SHOW"
+              }
+            ]
+          },
+          "Author": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "LEAD",
+                "value": "LEAD"
+              },
+              {
+                "name": "AI",
+                "value": "AI"
+              },
+              {
+                "name": "AGENT",
+                "value": "AGENT"
+              },
+              {
+                "name": "SYSTEM",
+                "value": "SYSTEM"
+              }
+            ]
+          },
+          "Channel": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "WEB",
+                "value": "WEB"
+              },
+              {
+                "name": "EMAIL",
+                "value": "EMAIL"
+              },
+              {
+                "name": "SMS",
+                "value": "SMS"
+              }
+            ]
+          },
+          "EnrollmentStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "ACTIVE",
+                "value": "ACTIVE"
+              },
+              {
+                "name": "STOPPED",
+                "value": "STOPPED"
+              },
+              {
+                "name": "DONE",
+                "value": "DONE"
+              }
+            ]
+          },
+          "Intent": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "BUYER",
+                "value": "BUYER"
+              },
+              {
+                "name": "SELLER",
+                "value": "SELLER"
+              },
+              {
+                "name": "INVESTOR",
+                "value": "INVESTOR"
+              },
+              {
+                "name": "UNKNOWN",
+                "value": "UNKNOWN"
+              }
+            ]
+          },
+          "LeadSource": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "WEBSITE",
+                "value": "WEBSITE"
+              },
+              {
+                "name": "FACEBOOK",
+                "value": "FACEBOOK"
+              },
+              {
+                "name": "ZILLOW",
+                "value": "ZILLOW"
+              },
+              {
+                "name": "GOOGLE_ADS",
+                "value": "GOOGLE_ADS"
+              },
+              {
+                "name": "MANUAL",
+                "value": "MANUAL"
+              }
+            ]
+          },
+          "Role": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "ADMIN",
+                "value": "ADMIN"
+              },
+              {
+                "name": "AGENT",
+                "value": "AGENT"
+              }
+            ]
+          },
+          "Stage": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "NEW",
+                "value": "NEW"
+              },
+              {
+                "name": "CONTACTED",
+                "value": "CONTACTED"
+              },
+              {
+                "name": "QUALIFIED",
+                "value": "QUALIFIED"
+              },
+              {
+                "name": "APPOINTMENT",
+                "value": "APPOINTMENT"
+              },
+              {
+                "name": "CLOSED_WON",
+                "value": "CLOSED_WON"
+              },
+              {
+                "name": "CLOSED_LOST",
+                "value": "CLOSED_LOST"
+              }
+            ]
+          },
+          "Temperature": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "HOT",
+                "value": "HOT"
+              },
+              {
+                "name": "WARM",
+                "value": "WARM"
+              },
+              {
+                "name": "COLD",
+                "value": "COLD"
+              }
+            ]
+          }
+        },
+        "models": {
+          "ActivityEvent": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "leadId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "payload": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
+              "type": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "lead": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "leadId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Lead",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "leadId": {
+                  "column": "leadId"
+                },
+                "payload": {
+                  "column": "payload"
+                },
+                "type": {
+                  "column": "type"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ActivityEvent"
+            }
+          },
+          "Appointment": {
+            "fields": {
+              "agentId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "endsAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "leadId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "startsAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AppointmentStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              }
+            },
+            "relations": {
+              "agent": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "agentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "lead": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "leadId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Lead",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "agentId": {
+                  "column": "agentId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "endsAt": {
+                  "column": "endsAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "leadId": {
+                  "column": "leadId"
+                },
+                "startsAt": {
+                  "column": "startsAt"
+                },
+                "status": {
+                  "column": "status"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Appointment"
+            }
+          },
+          "Lead": {
+            "fields": {
+              "aiEnabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "area": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "assignedToId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "budgetMax": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "email": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "firstResponseAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "intent": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Intent",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "name": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "phone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "preApproved": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "score": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "source": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "LeadSource",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "stage": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Stage",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "tags": {
+                "many": true,
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "temperature": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Temperature",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "timelineMonths": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "assignedTo": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "assignedToId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "aiEnabled": {
+                  "column": "aiEnabled"
+                },
+                "area": {
+                  "column": "area"
+                },
+                "assignedToId": {
+                  "column": "assignedToId"
+                },
+                "budgetMax": {
+                  "column": "budgetMax"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "firstResponseAt": {
+                  "column": "firstResponseAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "intent": {
+                  "column": "intent"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "phone": {
+                  "column": "phone"
+                },
+                "preApproved": {
+                  "column": "preApproved"
+                },
+                "score": {
+                  "column": "score"
+                },
+                "source": {
+                  "column": "source"
+                },
+                "stage": {
+                  "column": "stage"
+                },
+                "tags": {
+                  "column": "tags"
+                },
+                "temperature": {
+                  "column": "temperature"
+                },
+                "timelineMonths": {
+                  "column": "timelineMonths"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Lead"
+            }
+          },
+          "Message": {
+            "fields": {
+              "author": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Author",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "body": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "channel": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Channel",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "leadId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "meta": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "lead": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "leadId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Lead",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "author": {
+                  "column": "author"
+                },
+                "body": {
+                  "column": "body"
+                },
+                "channel": {
+                  "column": "channel"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "leadId": {
+                  "column": "leadId"
+                },
+                "meta": {
+                  "column": "meta"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Message"
+            }
+          },
+          "Sequence": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "trigger": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "trigger": {
+                  "column": "trigger"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Sequence"
+            }
+          },
+          "SequenceEnrollment": {
+            "fields": {
+              "currentStep": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "leadId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sequenceId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "EnrollmentStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              }
+            },
+            "relations": {
+              "lead": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "leadId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Lead",
+                  "namespace": "public"
+                }
+              },
+              "sequence": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "sequenceId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Sequence",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "currentStep": {
+                  "column": "currentStep"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "leadId": {
+                  "column": "leadId"
+                },
+                "sequenceId": {
+                  "column": "sequenceId"
+                },
+                "status": {
+                  "column": "status"
+                }
+              },
+              "namespaceId": "public",
+              "table": "SequenceEnrollment"
+            }
+          },
+          "SequenceStep": {
+            "fields": {
+              "channel": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Channel",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "delayMinutes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "position": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "sequenceId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "template": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "sequence": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "sequenceId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Sequence",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "channel": {
+                  "column": "channel"
+                },
+                "delayMinutes": {
+                  "column": "delayMinutes"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "position": {
+                  "column": "position"
+                },
+                "sequenceId": {
+                  "column": "sequenceId"
+                },
+                "template": {
+                  "column": "template"
+                }
+              },
+              "namespaceId": "public",
+              "table": "SequenceStep"
+            }
+          },
+          "User": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "email": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "passwordHash": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "role": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Role",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "passwordHash": {
+                  "column": "passwordHash"
+                },
+                "role": {
+                  "column": "role"
+                }
+              },
+              "namespaceId": "public",
+              "table": "User"
+            }
+          },
+          "WebhookEvent": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "idempotencyKey": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "payload": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
+              "receivedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "source": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "idempotencyKey": {
+                  "column": "idempotencyKey"
+                },
+                "payload": {
+                  "column": "payload"
+                },
+                "receivedAt": {
+                  "column": "receivedAt"
+                },
+                "source": {
+                  "column": "source"
+                }
+              },
+              "namespaceId": "public",
+              "table": "WebhookEvent"
+            }
+          }
+        }
+      }
+    }
+  },
+  "storage": {
+    "namespaces": {
+      "public": {
+        "entries": {
+          "table": {
+            "ActivityEvent": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "leadId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "payload": {
+                  "codecId": "pg/jsonb@1",
+                  "nativeType": "jsonb",
+                  "nullable": false
+                },
+                "type": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "leadId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ActivityEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Lead"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "leadId",
+                    "createdAt"
+                  ],
+                  "name": "ActivityEvent_leadId_createdAt_idx_634711b6",
+                  "prefix": "ActivityEvent_leadId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "leadId"
+                  ],
+                  "name": "ActivityEvent_leadId_idx_9113844c",
+                  "prefix": "ActivityEvent_leadId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "type",
+                    "createdAt"
+                  ],
+                  "name": "ActivityEvent_type_createdAt_idx_00d94001",
+                  "prefix": "ActivityEvent_type_createdAt_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "Appointment": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('BOOKED', 'CANCELLED', 'COMPLETED', 'NO_SHOW')",
+                  "name": "Appointment_status_check_cd6f6c1c",
+                  "prefix": "Appointment_status_check"
+                }
+              ],
+              "columns": {
+                "agentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "endsAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "leadId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "startsAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "BOOKED"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AppointmentStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "leadId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Appointment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Lead"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "agentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Appointment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "agentId"
+                  ],
+                  "name": "Appointment_agentId_idx_8d0ba4f0",
+                  "prefix": "Appointment_agentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "leadId"
+                  ],
+                  "name": "Appointment_leadId_idx_9113844c",
+                  "prefix": "Appointment_leadId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "agentId",
+                    "startsAt"
+                  ],
+                  "name": "appointment_agent_slot_booked_d474ab00",
+                  "prefix": "appointment_agent_slot_booked",
+                  "unique": true,
+                  "where": "status = 'BOOKED'"
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "Lead": {
+              "checks": [
+                {
+                  "expression": "\"intent\" IN ('BUYER', 'SELLER', 'INVESTOR', 'UNKNOWN')",
+                  "name": "Lead_intent_check_55273370",
+                  "prefix": "Lead_intent_check"
+                },
+                {
+                  "expression": "\"source\" IN ('WEBSITE', 'FACEBOOK', 'ZILLOW', 'GOOGLE_ADS', 'MANUAL')",
+                  "name": "Lead_source_check_c0a17e31",
+                  "prefix": "Lead_source_check"
+                },
+                {
+                  "expression": "\"stage\" IN ('NEW', 'CONTACTED', 'QUALIFIED', 'APPOINTMENT', 'CLOSED_WON', 'CLOSED_LOST')",
+                  "name": "Lead_stage_check_e4cbd60e",
+                  "prefix": "Lead_stage_check"
+                },
+                {
+                  "expression": "array_position(\"tags\", NULL) IS NULL",
+                  "name": "Lead_tags_elem_not_null_aecbe9e2",
+                  "prefix": "Lead_tags_elem_not_null"
+                },
+                {
+                  "expression": "\"temperature\" IN ('HOT', 'WARM', 'COLD')",
+                  "name": "Lead_temperature_check_f31e8577",
+                  "prefix": "Lead_temperature_check"
+                }
+              ],
+              "columns": {
+                "aiEnabled": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "area": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "assignedToId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "budgetMax": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "email": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "firstResponseAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "intent": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "UNKNOWN"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Intent",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "phone": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "preApproved": {
+                  "codecId": "pg/bool@1",
+                  "nativeType": "bool",
+                  "nullable": true
+                },
+                "score": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "source": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "LeadSource",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "stage": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "NEW"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Stage",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "tags": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": []
+                  },
+                  "many": true,
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "temperature": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "COLD"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Temperature",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "timelineMonths": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "assignedToId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Lead"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "assignedToId"
+                  ],
+                  "name": "Lead_assignedToId_idx_45a131c2",
+                  "prefix": "Lead_assignedToId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "source",
+                    "createdAt"
+                  ],
+                  "name": "Lead_source_createdAt_idx_ca471564",
+                  "prefix": "Lead_source_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "stage"
+                  ],
+                  "name": "Lead_stage_idx_51755035",
+                  "prefix": "Lead_stage_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "Message": {
+              "checks": [
+                {
+                  "expression": "\"author\" IN ('LEAD', 'AI', 'AGENT', 'SYSTEM')",
+                  "name": "Message_author_check_baa3fbc4",
+                  "prefix": "Message_author_check"
+                },
+                {
+                  "expression": "\"channel\" IN ('WEB', 'EMAIL', 'SMS')",
+                  "name": "Message_channel_check_e9ea543c",
+                  "prefix": "Message_channel_check"
+                }
+              ],
+              "columns": {
+                "author": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Author",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "body": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "channel": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Channel",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "leadId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "meta": {
+                  "codecId": "pg/jsonb@1",
+                  "nativeType": "jsonb",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "leadId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Message"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Lead"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "leadId",
+                    "createdAt"
+                  ],
+                  "name": "Message_leadId_createdAt_idx_634711b6",
+                  "prefix": "Message_leadId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "leadId"
+                  ],
+                  "name": "Message_leadId_idx_9113844c",
+                  "prefix": "Message_leadId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "Sequence": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "trigger": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "name"
+                  ]
+                }
+              ]
+            },
+            "SequenceEnrollment": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('ACTIVE', 'STOPPED', 'DONE')",
+                  "name": "SequenceEnrollment_status_check_666a942a",
+                  "prefix": "SequenceEnrollment_status_check"
+                }
+              ],
+              "columns": {
+                "currentStep": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "leadId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "sequenceId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "ACTIVE"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "EnrollmentStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "leadId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SequenceEnrollment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Lead"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "sequenceId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SequenceEnrollment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Sequence"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "leadId"
+                  ],
+                  "name": "SequenceEnrollment_leadId_idx_9113844c",
+                  "prefix": "SequenceEnrollment_leadId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "sequenceId"
+                  ],
+                  "name": "SequenceEnrollment_sequenceId_idx_de377412",
+                  "prefix": "SequenceEnrollment_sequenceId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "leadId",
+                    "sequenceId"
+                  ]
+                }
+              ]
+            },
+            "SequenceStep": {
+              "checks": [
+                {
+                  "expression": "\"channel\" IN ('WEB', 'EMAIL', 'SMS')",
+                  "name": "SequenceStep_channel_check_e9ea543c",
+                  "prefix": "SequenceStep_channel_check"
+                }
+              ],
+              "columns": {
+                "channel": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Channel",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "delayMinutes": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "position": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "sequenceId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "template": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "sequenceId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SequenceStep"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Sequence"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "sequenceId"
+                  ],
+                  "name": "SequenceStep_sequenceId_idx_de377412",
+                  "prefix": "SequenceStep_sequenceId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "sequenceId",
+                    "position"
+                  ]
+                }
+              ]
+            },
+            "User": {
+              "checks": [
+                {
+                  "expression": "\"role\" IN ('ADMIN', 'AGENT')",
+                  "name": "User_role_check_8de2d3ca",
+                  "prefix": "User_role_check"
+                }
+              ],
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "email": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "passwordHash": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "role": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "AGENT"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Role",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "email"
+                  ]
+                }
+              ]
+            },
+            "WebhookEvent": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "idempotencyKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "payload": {
+                  "codecId": "pg/jsonb@1",
+                  "nativeType": "jsonb",
+                  "nullable": false
+                },
+                "receivedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "source": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "idempotencyKey"
+                  ]
+                }
+              ]
+            }
+          },
+          "valueSet": {
+            "AppointmentStatus": {
+              "kind": "valueSet",
+              "values": [
+                "BOOKED",
+                "CANCELLED",
+                "COMPLETED",
+                "NO_SHOW"
+              ]
+            },
+            "Author": {
+              "kind": "valueSet",
+              "values": [
+                "LEAD",
+                "AI",
+                "AGENT",
+                "SYSTEM"
+              ]
+            },
+            "Channel": {
+              "kind": "valueSet",
+              "values": [
+                "WEB",
+                "EMAIL",
+                "SMS"
+              ]
+            },
+            "EnrollmentStatus": {
+              "kind": "valueSet",
+              "values": [
+                "ACTIVE",
+                "STOPPED",
+                "DONE"
+              ]
+            },
+            "Intent": {
+              "kind": "valueSet",
+              "values": [
+                "BUYER",
+                "SELLER",
+                "INVESTOR",
+                "UNKNOWN"
+              ]
+            },
+            "LeadSource": {
+              "kind": "valueSet",
+              "values": [
+                "WEBSITE",
+                "FACEBOOK",
+                "ZILLOW",
+                "GOOGLE_ADS",
+                "MANUAL"
+              ]
+            },
+            "Role": {
+              "kind": "valueSet",
+              "values": [
+                "ADMIN",
+                "AGENT"
+              ]
+            },
+            "Stage": {
+              "kind": "valueSet",
+              "values": [
+                "NEW",
+                "CONTACTED",
+                "QUALIFIED",
+                "APPOINTMENT",
+                "CLOSED_WON",
+                "CLOSED_LOST"
+              ]
+            },
+            "Temperature": {
+              "kind": "valueSet",
+              "values": [
+                "HOT",
+                "WARM",
+                "COLD"
+              ]
+            }
+          }
+        },
+        "id": "public",
+        "kind": "postgres-schema"
+      }
+    },
+    "storageHash": "c23cf60dc5b52006a3213af2afac97f5772c59a020d68efa505852b1f1c1bedb"
+  },
+  "execution": {
+    "executionHash": "751722900074e593a2dbc1ad4c124e7db7289611a17c4f3fbece310a06f63945",
+    "mutations": {
+      "defaults": [
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "ActivityEvent"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "Appointment"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "Lead"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "Message"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "Sequence"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "SequenceEnrollment"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "SequenceStep"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "User"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "WebhookEvent"
+          }
+        }
+      ]
+    }
+  },
+  "capabilities": {
+    "postgres": {
+      "distinctOn": true,
+      "jsonAgg": true,
+      "lateral": true,
+      "limit": true,
+      "orderBy": true,
+      "returning": true
+    },
+    "sql": {
+      "checkConstraint": true,
+      "defaultInInsert": true,
+      "enums": true,
+      "insertOnConflictSkip": true,
+      "insertOnConflictWithoutTarget": true,
+      "lateral": true,
+      "returning": true,
+      "scalarList": true
+    }
+  },
+  "extensions": {},
+  "meta": {},
+  "_generated": {
+    "warning": "⚠️  GENERATED FILE - DO NOT EDIT",
+    "message": "This file is automatically generated by \"prisma contract emit\".",
+    "regenerate": "To regenerate, run: prisma contract emit"
+  }
+}
