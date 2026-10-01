@@ -1568,6 +1568,22 @@
                 },
                 {
                   "columns": [
+                    "email"
+                  ],
+                  "name": "Lead_email_idx_46df9cad",
+                  "prefix": "Lead_email_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "phone"
+                  ],
+                  "name": "Lead_phone_idx_8db23f45",
+                  "prefix": "Lead_phone_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
                     "source",
                     "createdAt"
                   ],
@@ -2143,7 +2159,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "c23cf60dc5b52006a3213af2afac97f5772c59a020d68efa505852b1f1c1bedb"
+    "storageHash": "7c1efddabdbfb3908796256374a3ab44079c24ca88a9bfbebcb93cb7de96b879"
   },
   "execution": {
     "executionHash": "751722900074e593a2dbc1ad4c124e7db7289611a17c4f3fbece310a06f63945",

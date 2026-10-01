@@ -18,11 +18,12 @@ Requires Node 24, pnpm and Docker.
 
 ```sh
 docker compose up -d                      # Postgres, Redis, Mailpit
-cp apps/api/.env.example apps/api/.env
-pnpm install
+cp apps/api/.env.example apps/api/.env   # then set CHAT_TOKEN_SECRET
+cp apps/web/.env.example apps/web/.env.local
+pnpm install                              # also builds packages/shared
 pnpm --filter api db:reset                # migrate + seed
 pnpm --filter api start:dev               # API on http://localhost:3000
-pnpm --filter web dev                     # web on http://localhost:3001 if 3000 is taken
+pnpm --filter web dev                     # web on http://localhost:3001
 ```
 
 Tests:

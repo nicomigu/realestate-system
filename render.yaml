@@ -33,6 +33,11 @@ services:
         value: info
       - key: DATABASE_URL
         sync: false
+      - key: WEB_ORIGIN
+        value: https://realestate-system-ashen.vercel.app
+      # Signs chat tokens; Render generates a random value once.
+      - key: CHAT_TOKEN_SECRET
+        generateValue: true
       - key: REDIS_URL
         fromService:
           type: keyvalue

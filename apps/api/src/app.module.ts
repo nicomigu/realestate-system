@@ -6,6 +6,7 @@ import { ConfigModule } from './config/config.module.js';
 import { ENV, type Env } from './config/env.js';
 import { DatabaseModule } from './database/database.module.js';
 import { HealthModule } from './health/health.module.js';
+import { LeadsModule } from './leads/leads.module.js';
 import { loggerOptions } from './logger.options.js';
 import { RedisModule } from './redis/redis.module.js';
 
@@ -18,6 +19,7 @@ import { RedisModule } from './redis/redis.module.js';
     RedisModule,
     ChannelsModule,
     HealthModule,
+    LeadsModule,
   ],
 })
 export class AppModule {}

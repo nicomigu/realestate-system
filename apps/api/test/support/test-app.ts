@@ -15,6 +15,8 @@ import { RecordingChannelAdapter } from './recording-channel-adapter.js';
 export interface TestApp {
   app: INestApplication<App>;
   http: App;
+  /** For arranging state and checking what no API route exposes yet. */
+  db: Db;
   clock: FakeClock;
   channels: RecordingChannelAdapter;
   /** Empties every table and the test Redis db, and rewinds the clock. */
@@ -52,6 +54,7 @@ export async function createTestApp(options: TestAppOptions = {}): Promise<TestA
   return {
     app,
     http: app.getHttpServer(),
+    db,
     clock,
     channels,
     async reset() {
