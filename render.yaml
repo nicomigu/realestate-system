@@ -10,7 +10,8 @@ services:
     region: singapore # nearest Render region to the Supabase project (Asia Pacific)
     # `corepack pnpm` runs the pnpm version pinned in package.json without
     # `corepack enable`, which fails because /usr/bin is read-only on Render.
-    buildCommand: corepack pnpm install --frozen-lockfile && corepack pnpm --filter api build
+    # "api..." builds the API and the workspace packages it depends on (packages/shared), in order.
+    buildCommand: corepack pnpm install --frozen-lockfile && corepack pnpm --filter "api..." build
     # Migrations run before the app starts: Prisma 8 doesn't apply them from app code.
     startCommand: corepack pnpm --filter api db:migrate && corepack pnpm --filter api start:prod
     healthCheckPath: /health
