@@ -106,6 +106,9 @@ model Lead {
   @@index([stage])
   @@index([source, createdAt])
   @@index([assignedToId])
+  // Duplicate matching looks Leads up by contact details, stored normalized.
+  @@index([email])
+  @@index([phone])
 }
 
 model Message {

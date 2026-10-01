@@ -1,0 +1,80 @@
+[
+  {
+    "id": "index.Lead.Lead_email_idx_46df9cad",
+    "label": "Create index \"Lead_email_idx_46df9cad\" on \"Lead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Lead_email_idx_46df9cad",
+        "table": "Lead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Lead_email_idx_46df9cad\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead_email_idx_46df9cad\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Lead_email_idx_46df9cad\"",
+        "sql": "CREATE INDEX \"Lead_email_idx_46df9cad\" ON \"public\".\"Lead\" (\"email\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Lead_email_idx_46df9cad\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead_email_idx_46df9cad\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Lead.Lead_phone_idx_8db23f45",
+    "label": "Create index \"Lead_phone_idx_8db23f45\" on \"Lead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Lead_phone_idx_8db23f45",
+        "table": "Lead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Lead_phone_idx_8db23f45\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead_phone_idx_8db23f45\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Lead_phone_idx_8db23f45\"",
+        "sql": "CREATE INDEX \"Lead_phone_idx_8db23f45\" ON \"public\".\"Lead\" (\"phone\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Lead_phone_idx_8db23f45\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Lead_phone_idx_8db23f45\""
+        ]
+      }
+    ]
+  }
+]

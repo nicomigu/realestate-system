@@ -10,6 +10,10 @@ const TEST_ENV = {
     process.env['TEST_DATABASE_URL'] ??
     'postgresql://realestate:realestate@localhost:5432/realestate_test',
   REDIS_URL: process.env['TEST_REDIS_URL'] ?? 'redis://localhost:6379/1',
+  WEB_ORIGIN: 'http://localhost:3001',
+  CHAT_TOKEN_SECRET: 'test-chat-token-secret-at-least-32-characters',
+  // High enough that ordinary tests never trip it; the rate-limit test lowers it.
+  PUBLIC_RATE_LIMIT_PER_MINUTE: '1000',
 };
 
 // Runs once per test run, before any test file. Jest doesn't apply

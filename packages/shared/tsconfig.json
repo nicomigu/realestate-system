@@ -1,0 +1,17 @@
+{
+  // Compiled to dist/ because Node won't run TypeScript from inside node_modules,
+  // which is where the API sees this package at runtime.
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "sourceMap": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true
+  },
+  "include": ["src"]
+}
