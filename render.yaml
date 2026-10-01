@@ -8,9 +8,11 @@ services:
     runtime: node
     plan: free
     region: singapore # nearest Render region to the Supabase project (Asia Pacific)
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter api build
+    # `corepack pnpm` runs the pnpm version pinned in package.json without
+    # `corepack enable`, which fails because /usr/bin is read-only on Render.
+    buildCommand: corepack pnpm install --frozen-lockfile && corepack pnpm --filter api build
     # Migrations run before the app starts: Prisma 8 doesn't apply them from app code.
-    startCommand: pnpm --filter api db:migrate && pnpm --filter api start:prod
+    startCommand: corepack pnpm --filter api db:migrate && corepack pnpm --filter api start:prod
     healthCheckPath: /health
     autoDeployTrigger: checksPass
     buildFilter:
@@ -22,6 +24,9 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "24"
+      # Corepack ships with Node 24; this stops it asking before it downloads pnpm.
+      - key: COREPACK_ENABLE_DOWNLOAD_PROMPT
+        value: "0"
       - key: NODE_ENV
         value: production
       - key: LOG_LEVEL
