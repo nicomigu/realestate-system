@@ -40,7 +40,7 @@ NestJS, TypeScript end to end. The portfolio already has a FastAPI app, so this 
 | Email    | Mailpit locally, Resend in prod                                                         | Real inbox in the demo                           |
 | SMS      | Simulated channel adapter                                                               | Same interface a Twilio adapter would use        |
 | Tests    | Jest, Supertest, Playwright                                                             | Unit, API integration, E2E                       |
-| Infra    | Docker Compose, GitHub Actions, Railway (API, worker, Postgres, Redis), Vercel (web)    | Live link on the README                          |
+| Infra    | Docker Compose, GitHub Actions, Render (API + in-process worker, Key Value), Supabase (Postgres), Vercel (web) | Free hosting; live link on the README (ADR 0004) |
 
 ## Architecture
 
@@ -234,11 +234,11 @@ Every test in CI uses the Fake LLM, so the suite is free, fast and deterministic
 3. Run `prisma contract emit`, fail if the committed `contract.json` changed, then `prisma db migrate` against the Postgres service.
 4. Unit, integration and agent-loop tests.
 5. Build API and web, start them, run Playwright; upload the HTML report and traces on failure.
-6. On `main`: Railway and Vercel deploy automatically.
+6. On `main`: Render and Vercel deploy automatically.
 
 **Deployment**
 
-- Railway: `api` and `worker` services from the same image with different start commands, plus managed Postgres and Redis. `prisma db migrate` runs as a pre-deploy step before the API starts, because Prisma 8 doesn't apply migrations from app code.
+- Render (free web service): the API with the BullMQ worker running in-process (ADR 0004), plus a free Key Value instance for BullMQ. Postgres is on Supabase's free tier, reached through its Session pooler. `prisma db migrate` runs before the API starts, because Prisma 8 doesn't apply migrations from app code. A scheduled GitHub Action pings `/health` so the free service doesn't sleep.
 - Vercel: `apps/web`.
 - Demo safety: a seeded agent login shown on the landing page, a cap on AI turns per lead, a daily cap on Claude calls, and a nightly reseed.
 

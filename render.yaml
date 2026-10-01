@@ -1,0 +1,44 @@
+# Render Blueprint: free-tier API (with the worker in-process, ADR 0004) and Key Value.
+# Postgres lives on Supabase (free). When Render asks for DATABASE_URL during
+# Blueprint creation, paste Supabase's *Session pooler* connection string: the
+# direct connection is IPv6-only, and Render can't reach IPv6 addresses.
+services:
+  - type: web
+    name: realestate-api
+    runtime: node
+    plan: free
+    region: singapore # nearest Render region to the Supabase project (Asia Pacific)
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter api build
+    # Migrations run before the app starts: Prisma 8 doesn't apply them from app code.
+    startCommand: pnpm --filter api db:migrate && pnpm --filter api start:prod
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    buildFilter:
+      paths:
+        - apps/api/**
+        - packages/shared/**
+        - pnpm-lock.yaml
+        - render.yaml
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: realestate-redis
+          property: connectionString
+
+  - type: keyvalue
+    name: realestate-redis
+    plan: free
+    region: singapore
+    # BullMQ requires that Redis never evicts its keys.
+    maxmemoryPolicy: noeviction
+    # Reachable only from services inside this Render account.
+    ipAllowList: []
