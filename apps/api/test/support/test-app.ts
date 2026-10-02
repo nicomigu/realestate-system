@@ -1,4 +1,4 @@
-import type { INestApplication } from '@nestjs/common';
+import type { INestApplication, Type } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { Redis } from 'ioredis';
 import type { App } from 'supertest/types.js';
@@ -27,6 +27,8 @@ export interface TestApp {
 export interface TestAppOptions {
   /** Env overrides applied while the app boots; `undefined` removes a variable. */
   env?: Record<string, string | undefined>;
+  /** Extra controllers mounted for one test file, e.g. to probe guards. */
+  controllers?: Type[];
 }
 
 // Boots the real AppModule against the test Postgres and Redis. Only the ports
@@ -36,7 +38,10 @@ export async function createTestApp(options: TestAppOptions = {}): Promise<TestA
   const channels = new RecordingChannelAdapter();
 
   const app = await withEnv(options.env ?? {}, async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+      controllers: options.controllers ?? [],
+    })
       .overrideProvider(CLOCK)
       .useValue(clock)
       .overrideProvider(CHANNEL_ADAPTERS)

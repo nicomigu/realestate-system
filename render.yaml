@@ -39,6 +39,9 @@ services:
       # Signs chat tokens; Render generates a random value once.
       - key: CHAT_TOKEN_SECRET
         generateValue: true
+      # Signs dashboard login tokens; also generated once by Render.
+      - key: AUTH_TOKEN_SECRET
+        generateValue: true
       - key: REDIS_URL
         fromService:
           type: keyvalue

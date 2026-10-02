@@ -12,6 +12,7 @@ const TEST_ENV = {
   REDIS_URL: process.env['TEST_REDIS_URL'] ?? 'redis://localhost:6379/1',
   WEB_ORIGIN: 'http://localhost:3001',
   CHAT_TOKEN_SECRET: 'test-chat-token-secret-at-least-32-characters',
+  AUTH_TOKEN_SECRET: 'test-auth-token-secret-at-least-32-characters',
   // High enough that ordinary tests never trip it; the rate-limit test lowers it.
   PUBLIC_RATE_LIMIT_PER_MINUTE: '1000',
 };

@@ -14,6 +14,8 @@ const EnvSchema = z.object({
   WEB_ORIGIN: z.url({ protocol: /^https?$/ }).transform((url) => new URL(url).origin),
   // Signs chat tokens. Separate from the Agent login secret, so neither can pass as the other.
   CHAT_TOKEN_SECRET: z.string().min(32, 'must be at least 32 characters'),
+  // Signs dashboard login tokens for Agents and Admins.
+  AUTH_TOKEN_SECRET: z.string().min(32, 'must be at least 32 characters'),
   // Submissions per IP per minute on public forms.
   PUBLIC_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(5),
 });

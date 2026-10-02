@@ -2,8 +2,7 @@
 
 import { LeadFormSchema } from '@realestate-system/shared';
 import { type FormEvent, useState } from 'react';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+import { API_URL } from '@/lib/api';
 
 type Field = 'name' | 'email' | 'phone';
 type FieldErrors = Partial<Record<Field, string>>;

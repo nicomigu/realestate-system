@@ -2,6 +2,7 @@ import { Body, Controller, HttpStatus, Post, Res, UseGuards } from '@nestjs/comm
 import { ApiTags } from '@nestjs/swagger';
 import { type LeadForm, type LeadFormResponse, LeadFormSchema } from '@realestate-system/shared';
 import type { Response } from 'express';
+import { Public } from '../auth/auth.decorators.js';
 import { ChatTokenService } from '../chat/chat-token.service.js';
 import { PublicRateLimitGuard } from '../common/public-rate-limit.guard.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
@@ -9,6 +10,7 @@ import { LeadIntakeService } from './lead-intake.service.js';
 import { leadSourceFromUtm } from './normalize.js';
 
 @ApiTags('leads')
+@Public()
 @Controller('public/leads')
 @UseGuards(PublicRateLimitGuard)
 export class PublicLeadsController {
