@@ -10,6 +10,10 @@ A real-estate lead system that answers every new Lead within seconds with an AI 
 | API health | https://realestate-api-w9qu.onrender.com/health |
 | API docs (Swagger) | https://realestate-api-w9qu.onrender.com/docs |
 
+Demo login: `agent@realestate-system.dev` / `demo1234` (or `admin@realestate-system.dev`) at [/login](https://realestate-system-ashen.vercel.app/login).
+
+**Use the domain above, not a deployment URL.** Vercel gives every build its own address (e.g. `realestate-system-6j3useyhw-nicomigu.vercel.app`), a frozen snapshot of that build. The domain `realestate-system-ashen.vercel.app` always points at the latest production build, and it's the only web origin the API allows (`WEB_ORIGIN`, CORS). On a deployment URL the browser blocks API calls, so the form and login fail with "Something went wrong".
+
 Hosting is free: Render (API and Key Value), Supabase (Postgres) and Vercel (web). See [ADR 0004](docs/adr/0004-free-hosting-worker-in-process.md). The free API sleeps when idle, so the first request after a pause can take about a minute.
 
 ## Local setup

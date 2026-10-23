@@ -1,3 +1,4 @@
+import { ChatWidget } from './chat-widget';
 import { LeadForm } from './lead-form';
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
           <LeadForm />
         </section>
       </div>
+      <ChatWidget />
     </main>
   );
 }

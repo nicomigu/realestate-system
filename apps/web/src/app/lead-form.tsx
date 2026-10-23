@@ -1,8 +1,9 @@
 'use client';
 
-import { LeadFormSchema } from '@realestate-system/shared';
+import { type LeadFormResponse, LeadFormSchema } from '@realestate-system/shared';
 import { type FormEvent, useState } from 'react';
 import { API_URL } from '@/lib/api';
+import { openChat, setChatToken } from '@/lib/chat';
 
 type Field = 'name' | 'email' | 'phone';
 type FieldErrors = Partial<Record<Field, string>>;
@@ -39,8 +40,11 @@ export function LeadForm() {
       });
       if (res.status === 429) return setStatus('rate-limited');
       if (!res.ok) return setStatus('failed');
-      // The response's chat token is for the chat widget, which arrives with Web Chat (#8).
+      // Hand the new Lead's chat token to the widget, so the conversation continues there.
+      const { chatToken } = (await res.json()) as LeadFormResponse;
+      setChatToken(chatToken);
       setStatus('done');
+      openChat();
     } catch {
       setStatus('failed');
     }

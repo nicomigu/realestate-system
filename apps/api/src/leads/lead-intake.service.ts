@@ -1,8 +1,16 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import type { Models } from '../../prisma/contract.js';
 import type { Db } from '../../prisma/db.js';
 import { DB } from '../database/database.module.js';
-import { type LeadSource, normalizeEmail, normalizePhone } from './normalize.js';
+import {
+  type LeadSource,
+  normalizeEmail,
+  normalizePhone,
+} from './normalize.js';
 
 type Stage = Models.public_Lead['stage'];
 
@@ -10,7 +18,7 @@ const OPEN_STAGES: Stage[] = ['NEW', 'CONTACTED', 'QUALIFIED', 'APPOINTMENT'];
 
 /** A Lead's contact details as they arrived, from any channel (form, webhook). */
 export interface LeadIntakeInput {
-  name: string;
+  name?: string;
   email?: string;
   phone?: string;
   source: LeadSource;
@@ -32,8 +40,10 @@ export class LeadIntakeService {
   constructor(@Inject(DB) private readonly db: Db) {}
 
   async intake(input: LeadIntakeInput): Promise<LeadIntakeResult> {
-    const email = input.email === undefined ? null : normalizeEmail(input.email);
-    const phone = input.phone === undefined ? null : normalizePhone(input.phone);
+    const email =
+      input.email === undefined ? null : normalizeEmail(input.email);
+    const phone =
+      input.phone === undefined ? null : normalizePhone(input.phone);
 
     const match = await this.findOpenLead(email, phone);
     if (match) {
@@ -43,7 +53,7 @@ export class LeadIntakeService {
         payload: {
           matchedBy: match.by,
           source: input.source,
-          submitted: { name: input.name, email, phone },
+          submitted: { name: input.name ?? null, email, phone },
           ...input.details,
         },
       });
@@ -53,7 +63,7 @@ export class LeadIntakeService {
     const agent = await this.bookableAgent();
     const leadId = await this.db.transaction(async (tx) => {
       const lead = await tx.orm.public.Lead.create({
-        name: input.name,
+        name: input.name ?? null,
         email,
         phone,
         source: input.source,
@@ -89,9 +99,9 @@ export class LeadIntakeService {
   }
 
   private openLeads() {
-    return this.db.orm.public.Lead.where((l) => l.stage.in(OPEN_STAGES)).orderBy((l) =>
-      l.createdAt.desc(),
-    );
+    return this.db.orm.public.Lead.where((l) =>
+      l.stage.in(OPEN_STAGES),
+    ).orderBy((l) => l.createdAt.desc());
   }
 
   // The MVP has exactly one bookable Agent, and every Lead is assigned to them.
@@ -100,7 +110,9 @@ export class LeadIntakeService {
       .orderBy((u) => u.createdAt.asc())
       .first();
     if (!agent) {
-      throw new InternalServerErrorException('No bookable Agent exists to assign the Lead to');
+      throw new InternalServerErrorException(
+        'No bookable Agent exists to assign the Lead to',
+      );
     }
     return agent;
   }

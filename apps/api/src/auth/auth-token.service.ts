@@ -19,7 +19,10 @@ export class AuthTokenService {
 
   issue(user: RequestUser): string {
     const claims: AuthTokenClaims = { sub: user.id, role: user.role };
-    return this.jwt.sign(claims, { audience: AUTH_TOKEN_AUDIENCE, expiresIn: AUTH_TOKEN_LIFETIME });
+    return this.jwt.sign(claims, {
+      audience: AUTH_TOKEN_AUDIENCE,
+      expiresIn: AUTH_TOKEN_LIFETIME,
+    });
   }
 
   /** The token's user, or null when it's missing, forged, expired or meant for something else. */

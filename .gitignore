@@ -21,3 +21,14 @@ GEMINI.md
 .codex/
 .aider*
 .github/copilot-instructions.md
+
+# Personal step-by-step build guides (not part of the project)
+/guides/
+
+# Planning notes and boilerplate (kept locally, not shown in the repo)
+/prd.md
+/realestate-system Board.html
+apps/api/prisma-8.md
+apps/api/README.md
+apps/web/README.md
+*.tsbuildinfo
