@@ -66,6 +66,7 @@ describe('POST /public/leads', () => {
   describe('when the person already has an open Lead', () => {
     it('matches by email regardless of case and keeps the original Lead Source', async () => {
       const first = await submit({ name: 'Maria', email: 'maria@example.com', utmSource: 'facebook' });
+      t.clock.advance(60_000);
 
       const second = await submit({ name: 'Maria S.', email: 'MARIA@example.com', utmSource: 'zillow' })
         .expect(200);

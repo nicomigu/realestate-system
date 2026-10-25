@@ -1,5 +1,8 @@
+import type { INestApplication } from '@nestjs/common';
+import type { Role } from '@realestate-system/shared';
 import type { Models } from '../../prisma/contract.js';
 import type { Db } from '../../prisma/db.js';
+import { AuthTokenService } from '../../src/auth/auth-token.service.js';
 import { hashPassword } from '../../src/auth/password.js';
 
 type LeadRow = Omit<Models.public_Lead, 'assignedTo'>;
@@ -26,6 +29,11 @@ export async function createAdmin(db: Db, options: UserOptions = {}): Promise<{ 
     role: 'ADMIN',
     passwordHash: options.password ? await hashPassword(options.password) : 'no-password',
   });
+}
+
+/** A dashboard token without the slow password login, for tests that aren't about logging in. */
+export function dashboardToken(app: INestApplication, user: { id: string; role: Role }): string {
+  return app.get(AuthTokenService).issue(user);
 }
 
 export async function findLead(db: Db, id: string): Promise<LeadRow | null> {

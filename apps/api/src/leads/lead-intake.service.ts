@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import type { Models } from '../../prisma/contract.js';
 import type { Db } from '../../prisma/db.js';
+import { CLOCK, type Clock } from '../clock/clock.js';
 import { DB } from '../database/database.module.js';
 import {
   type LeadSource,
@@ -37,13 +38,18 @@ export interface LeadIntakeResult {
 // another. A person whose only Lead is Closed starts a new one.
 @Injectable()
 export class LeadIntakeService {
-  constructor(@Inject(DB) private readonly db: Db) {}
+  constructor(
+    @Inject(DB) private readonly db: Db,
+    @Inject(CLOCK) private readonly clock: Clock,
+  ) {}
 
   async intake(input: LeadIntakeInput): Promise<LeadIntakeResult> {
     const email =
       input.email === undefined ? null : normalizeEmail(input.email);
     const phone =
       input.phone === undefined ? null : normalizePhone(input.phone);
+    // From the Clock, like messages, so a Lead's timeline sorts in the order things happened.
+    const now = this.clock.now().toISOString();
 
     const match = await this.findOpenLead(email, phone);
     if (match) {
@@ -56,6 +62,7 @@ export class LeadIntakeService {
           submitted: { name: input.name ?? null, email, phone },
           ...input.details,
         },
+        createdAt: now,
       });
       return { leadId: match.leadId, created: false };
     }
@@ -68,11 +75,13 @@ export class LeadIntakeService {
         phone,
         source: input.source,
         assignedToId: agent.id,
+        createdAt: now,
       });
       await tx.orm.public.ActivityEvent.create({
         leadId: lead.id,
         type: 'lead.created',
         payload: { source: input.source, ...input.details },
+        createdAt: now,
       });
       return lead.id;
     });
